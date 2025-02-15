@@ -10,7 +10,7 @@ const Header = () => {
           <div className="flex items-center space-x-12">
             {/* Logo/Brand */}
             <Link to="/" className="text-2xl font-bold text-white">
-              Mindful University
+              MindfulUniversity
             </Link>
             
             {/* Navigation Links */}

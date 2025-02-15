@@ -66,27 +66,24 @@ const Index = () => {
             className="text-center mb-8"
           >
             <h1 className="text-5xl font-bold rainbow-text mb-6">
-              Health Demographics Assessment
+              Student Health Demographics Assessment
             </h1>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
               Your responses are secure and encrypted
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            <div className="space-y-6">
-              <SecurityInfo />
-              <BasicHealthInfo formData={formData} setFormData={setFormData} />
-            </div>
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-8">
+            <SecurityInfo />
+          </div>
 
-            <div className="space-y-6">
-              <SecurityInfo />
-              <AdditionalHealthInfo 
-                formData={formData} 
-                setFormData={setFormData}
-                handleSubmit={handleSubmit}
-              />
-            </div>
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <BasicHealthInfo formData={formData} setFormData={setFormData} />
+            <AdditionalHealthInfo 
+              formData={formData} 
+              setFormData={setFormData}
+              handleSubmit={handleSubmit}
+            />
           </div>
         </div>
       </div>
