@@ -167,7 +167,6 @@ const TrustedLoans = () => {
             <p className="text-gray-600 mb-8">
               Your information is secure and protected through Dual Key homomorphic encryption.
             </p>
-            <SecurityInfo />
           </motion.div>
         </div>
       </div>
@@ -564,10 +563,16 @@ const TrustedLoans = () => {
               animate={{ opacity: 1, x: 0 }}
               className="space-y-6"
             >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <SecurityInfo />
+              </div>
+
               <h2 className="text-2xl font-semibold text-gray-800 mb-6">Demographic Information</h2>
+              
               <p className="text-sm text-gray-600 mb-6">
                 These questions are collected to comply with federal reporting requirements and support our commitment to fair lending. Your responses are used solely for statistical monitoring.
               </p>
+              
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -675,10 +680,6 @@ const TrustedLoans = () => {
                     <option value="65-plus">65 or older</option>
                   </select>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <SecurityInfo />
               </div>
             </motion.div>
           )}
