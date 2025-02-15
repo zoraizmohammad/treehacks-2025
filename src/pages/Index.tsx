@@ -20,11 +20,6 @@ const Index = () => {
     bloodType: "",
     exerciseFrequency: "3",
     sleepHours: "7",
-    smokingStatus: "",
-    alcoholConsumption: "",
-    chronicConditions: [] as string[],
-    medications: "",
-    allergies: "",
     dietaryBalance: "",
     mentalHealth: "",
     energyLevels: "",
@@ -34,11 +29,6 @@ const Index = () => {
     mindfulnessPractices: "",
     responseType: "dropdown" as "dropdown" | "written",
     writtenResponses: {
-      smokingStatus: "",
-      alcoholConsumption: "",
-      medications: "",
-      allergies: "",
-      chronicConditions: "",
       dietaryBalance: "",
       mentalHealth: "",
       generalHealth: "",
@@ -236,6 +226,25 @@ const Index = () => {
                       <span>12h</span>
                     </div>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      How would you rate your overall energy levels during a typical day?
+                    </label>
+                    <select
+                      className="input-field"
+                      value={formData.energyLevels}
+                      onChange={(e) => setFormData({ ...formData, energyLevels: e.target.value })}
+                      required
+                    >
+                      <option value="">Select an option</option>
+                      <option value="very-high">Very High</option>
+                      <option value="high">High</option>
+                      <option value="moderate">Moderate</option>
+                      <option value="low">Low</option>
+                      <option value="very-low">Very Low</option>
+                    </select>
+                  </div>
                 </form>
               </motion.div>
             </div>
@@ -294,116 +303,6 @@ const Index = () => {
                     <>
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Smoking Status
-                        </label>
-                        <select
-                          className="input-field"
-                          value={formData.smokingStatus}
-                          onChange={(e) => setFormData({ ...formData, smokingStatus: e.target.value })}
-                          required
-                        >
-                          <option value="">Select an option</option>
-                          <option value="never">Never smoked</option>
-                          <option value="former">Former smoker</option>
-                          <option value="current">Current smoker</option>
-                          <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Alcohol Consumption
-                        </label>
-                        <select
-                          className="input-field"
-                          value={formData.alcoholConsumption}
-                          onChange={(e) => setFormData({ ...formData, alcoholConsumption: e.target.value })}
-                          required
-                        >
-                          <option value="">Select an option</option>
-                          <option value="never">Never</option>
-                          <option value="occasional">Occasional (1-2 drinks/month)</option>
-                          <option value="moderate">Moderate (1-2 drinks/week)</option>
-                          <option value="regular">Regular (3-4 drinks/week)</option>
-                          <option value="frequent">Frequent (5+ drinks/week)</option>
-                          <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Do you have any chronic conditions? (Select all that apply)
-                        </label>
-                        <div className="space-y-2">
-                          {[
-                            "Diabetes",
-                            "Hypertension",
-                            "Asthma",
-                            "Heart Disease",
-                            "Arthritis",
-                            "Other",
-                            "None",
-                            "Prefer not to say"
-                          ].map((condition) => (
-                            <label key={condition} className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                className="rounded border-gray-600 bg-black/20 text-[#0EA5E9]"
-                                checked={formData.chronicConditions.includes(condition)}
-                                onChange={(e) => {
-                                  const newConditions = e.target.checked
-                                    ? [...formData.chronicConditions, condition]
-                                    : formData.chronicConditions.filter(c => c !== condition);
-                                  setFormData({ ...formData, chronicConditions: newConditions });
-                                }}
-                              />
-                              <span className="text-sm text-gray-300">{condition}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Are you currently taking any medications?
-                        </label>
-                        <select
-                          className="input-field"
-                          value={formData.medications}
-                          onChange={(e) => setFormData({ ...formData, medications: e.target.value })}
-                          required
-                        >
-                          <option value="">Select an option</option>
-                          <option value="none">No medications</option>
-                          <option value="otc">Over-the-counter medications only</option>
-                          <option value="prescription">Prescription medications</option>
-                          <option value="both">Both OTC and prescription medications</option>
-                          <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Do you have any allergies?
-                        </label>
-                        <select
-                          className="input-field"
-                          value={formData.allergies}
-                          onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
-                          required
-                        >
-                          <option value="">Select an option</option>
-                          <option value="none">No known allergies</option>
-                          <option value="food">Food allergies</option>
-                          <option value="medication">Medication allergies</option>
-                          <option value="environmental">Environmental allergies</option>
-                          <option value="multiple">Multiple types of allergies</option>
-                          <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
                           How balanced do you consider your daily diet?
                         </label>
                         <select
@@ -436,25 +335,6 @@ const Index = () => {
                           <option value="sometimes">Sometimes</option>
                           <option value="often">Often</option>
                           <option value="always">Always</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          How would you rate your overall energy levels during a typical day?
-                        </label>
-                        <select
-                          className="input-field"
-                          value={formData.energyLevels}
-                          onChange={(e) => setFormData({ ...formData, energyLevels: e.target.value })}
-                          required
-                        >
-                          <option value="">Select an option</option>
-                          <option value="very-high">Very High</option>
-                          <option value="high">High</option>
-                          <option value="moderate">Moderate</option>
-                          <option value="low">Low</option>
-                          <option value="very-low">Very Low</option>
                         </select>
                       </div>
 
@@ -536,121 +416,6 @@ const Index = () => {
                     </>
                   ) : (
                     <>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Please describe your smoking habits
-                        </label>
-                        <textarea
-                          className="input-field min-h-[100px]"
-                          value={formData.writtenResponses.smokingStatus}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            writtenResponses: {
-                              ...formData.writtenResponses,
-                              smokingStatus: e.target.value.slice(0, 250)
-                            }
-                          })}
-                          maxLength={250}
-                          placeholder="Describe your current or past smoking habits..."
-                          required
-                        />
-                        <p className="text-xs text-gray-500 text-right">
-                          {250 - formData.writtenResponses.smokingStatus.length} characters remaining
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Please describe your alcohol consumption
-                        </label>
-                        <textarea
-                          className="input-field min-h-[100px]"
-                          value={formData.writtenResponses.alcoholConsumption}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            writtenResponses: {
-                              ...formData.writtenResponses,
-                              alcoholConsumption: e.target.value.slice(0, 250)
-                            }
-                          })}
-                          maxLength={250}
-                          placeholder="Describe your alcohol consumption patterns..."
-                          required
-                        />
-                        <p className="text-xs text-gray-500 text-right">
-                          {250 - formData.writtenResponses.alcoholConsumption.length} characters remaining
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Please list any medications you are currently taking
-                        </label>
-                        <textarea
-                          className="input-field min-h-[100px]"
-                          value={formData.writtenResponses.medications}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            writtenResponses: {
-                              ...formData.writtenResponses,
-                              medications: e.target.value.slice(0, 250)
-                            }
-                          })}
-                          maxLength={250}
-                          placeholder="List your current medications..."
-                          required
-                        />
-                        <p className="text-xs text-gray-500 text-right">
-                          {250 - formData.writtenResponses.medications.length} characters remaining
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Please describe any allergies you have
-                        </label>
-                        <textarea
-                          className="input-field min-h-[100px]"
-                          value={formData.writtenResponses.allergies}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            writtenResponses: {
-                              ...formData.writtenResponses,
-                              allergies: e.target.value.slice(0, 250)
-                            }
-                          })}
-                          maxLength={250}
-                          placeholder="Describe any allergies..."
-                          required
-                        />
-                        <p className="text-xs text-gray-500 text-right">
-                          {250 - formData.writtenResponses.allergies.length} characters remaining
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Please describe any chronic conditions you have
-                        </label>
-                        <textarea
-                          className="input-field min-h-[100px]"
-                          value={formData.writtenResponses.chronicConditions}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            writtenResponses: {
-                              ...formData.writtenResponses,
-                              chronicConditions: e.target.value.slice(0, 250)
-                            }
-                          })}
-                          maxLength={250}
-                          placeholder="Describe any chronic conditions..."
-                          required
-                        />
-                        <p className="text-xs text-gray-500 text-right">
-                          {250 - formData.writtenResponses.chronicConditions.length} characters remaining
-                        </p>
-                      </div>
-
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">
                           Please describe your dietary balance and any challenges you face
