@@ -4,42 +4,81 @@ import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   isWorkNight?: boolean;
+  isTrustedLoans?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ isWorkNight }) => {
+const Header: React.FC<HeaderProps> = ({ isWorkNight, isTrustedLoans }) => {
+  const getBrandName = () => {
+    if (isWorkNight) return "WorkNight";
+    if (isTrustedLoans) return "TrustedLoans";
+    return "MindfulUniversity";
+  };
+
+  const getHomeRoute = () => {
+    if (isWorkNight) return "/worknight";
+    if (isTrustedLoans) return "/trustedloans";
+    return "/";
+  };
+
+  const getAdminRoute = () => {
+    if (isWorkNight) return "/worknight/admin";
+    if (isTrustedLoans) return "/trustedloans/admin";
+    return "/admin";
+  };
+
+  const getHeaderClass = () => {
+    if (isTrustedLoans) return "border-b border-gray-200 bg-white";
+    return `border-b ${isWorkNight ? 'border-white/10 bg-black' : 'border-white/10 bg-[#1A1F2C]'}`;
+  };
+
+  const getTextColor = () => {
+    if (isTrustedLoans) return "text-gray-800";
+    return "text-white";
+  };
+
   return (
-    <header className={`border-b ${isWorkNight ? 'border-white/10 bg-black' : 'border-white/10 bg-[#1A1F2C]'}`}>
+    <header className={getHeaderClass()}>
       <div className="max-w-6xl mx-auto px-6 py-4">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-12">
-            {/* Logo/Brand */}
-            <Link to={isWorkNight ? "/worknight" : "/"} className="text-2xl font-bold text-white">
-              {isWorkNight ? "WorkNight" : "MindfulUniversity"}
+            <Link to={getHomeRoute()} className={`text-2xl font-bold ${getTextColor()}`}>
+              {getBrandName()}
             </Link>
             
-            {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-8">
               {isWorkNight ? (
                 <>
-                  <Link to="/jobs" className="text-white/90 hover:text-white transition-colors">
+                  <Link to="/jobs" className={`${getTextColor()} opacity-90 hover:opacity-100 transition-colors`}>
                     Jobs
                   </Link>
-                  <Link to="/career-path" className="text-white/90 hover:text-white transition-colors">
+                  <Link to="/career-path" className={`${getTextColor()} opacity-90 hover:opacity-100 transition-colors`}>
                     Explore Career Paths
+                  </Link>
+                </>
+              ) : isTrustedLoans ? (
+                <>
+                  <Link to="/personal-loans" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    Personal Loans
+                  </Link>
+                  <Link to="/mortgage" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    Mortgage
+                  </Link>
+                  <Link to="/business" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    Business
                   </Link>
                 </>
               ) : (
                 <>
-                  <Link to="/approach" className="text-white/90 hover:text-white transition-colors">
+                  <Link to="/approach" className={`${getTextColor()} opacity-90 hover:opacity-100 transition-colors`}>
                     Our Approach
                   </Link>
-                  <Link to="/results" className="text-white/90 hover:text-white transition-colors">
+                  <Link to="/results" className={`${getTextColor()} opacity-90 hover:opacity-100 transition-colors`}>
                     Our Results
                   </Link>
-                  <Link to="/resources" className="text-white/90 hover:text-white transition-colors">
+                  <Link to="/resources" className={`${getTextColor()} opacity-90 hover:opacity-100 transition-colors`}>
                     Resources
                   </Link>
-                  <Link to="/about" className="text-white/90 hover:text-white transition-colors">
+                  <Link to="/about" className={`${getTextColor()} opacity-90 hover:opacity-100 transition-colors`}>
                     Who We Are
                   </Link>
                 </>
@@ -47,17 +86,16 @@ const Header: React.FC<HeaderProps> = ({ isWorkNight }) => {
             </div>
           </div>
 
-          {/* Theme Switcher & Admin Login */}
           <div className="flex items-center space-x-6">
             <Link 
-              to={isWorkNight ? "/" : "/worknight"} 
-              className="text-white/90 hover:text-white transition-colors"
+              to={isTrustedLoans ? "/" : isWorkNight ? "/" : "/worknight"} 
+              className={`${getTextColor()} opacity-90 hover:opacity-100 transition-colors`}
             >
-              Switch to {isWorkNight ? "MindfulUniversity" : "WorkNight"}
+              Switch to {isTrustedLoans ? "MindfulUniversity" : isWorkNight ? "MindfulUniversity" : "WorkNight"}
             </Link>
             <Link 
-              to={isWorkNight ? "/worknight/admin" : "/admin"}
-              className="inline-flex items-center text-[#0EA5E9] hover:text-white transition-colors"
+              to={getAdminRoute()}
+              className={isTrustedLoans ? "inline-flex items-center text-[#0FA0CE] hover:text-[#0D8BAD] transition-colors" : "inline-flex items-center text-[#0EA5E9] hover:text-white transition-colors"}
             >
               Admin login
               <svg 
