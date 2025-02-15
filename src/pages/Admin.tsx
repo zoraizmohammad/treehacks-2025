@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from "framer-motion";
-import { LayoutDashboard, Users, Database, Settings } from "lucide-react";
+import { Users, FileText, Settings } from "lucide-react";
 import Header from "@/components/Header";
 
 const AdminDashboard = () => {
@@ -15,87 +15,124 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <h1 className="text-4xl font-bold rainbow-text">Admin Dashboard</h1>
-            <p className="text-gray-400 mt-2">Welcome to the Mindful University admin panel</p>
+            <h1 className="text-4xl font-bold text-[#F97316]">Admin Dashboard</h1>
+            <p className="text-gray-400 mt-2">Manage and monitor health demographic data</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Dashboard Cards */}
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="glass-card p-6 flex flex-col items-center text-center"
+              className="glass-card p-6"
             >
-              <LayoutDashboard className="w-8 h-8 text-[#F97316] mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Overview</h3>
-              <p className="text-sm text-gray-400">View health assessment statistics</p>
+              <div className="flex items-center gap-3 text-[#F97316] mb-4">
+                <Users className="w-5 h-5" />
+                <span className="font-medium">Total Responses</span>
+              </div>
+              <div className="space-y-1">
+                <div className="text-4xl font-bold">1,234</div>
+                <div className="text-sm text-green-400">+12% from last month</div>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="glass-card p-6 flex flex-col items-center text-center"
+              className="glass-card p-6"
             >
-              <Users className="w-8 h-8 text-[#0EA5E9] mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Participants</h3>
-              <p className="text-sm text-gray-400">Manage participant data</p>
+              <div className="flex items-center gap-3 text-[#0EA5E9] mb-4">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                <span className="font-medium">Average Age</span>
+              </div>
+              <div className="space-y-1">
+                <div className="text-4xl font-bold">27.5</div>
+                <div className="text-sm text-gray-400">Years old</div>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="glass-card p-6 flex flex-col items-center text-center"
+              className="glass-card p-6"
             >
-              <Database className="w-8 h-8 text-[#F97316] mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Reports</h3>
-              <p className="text-sm text-gray-400">Generate health reports</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="glass-card p-6 flex flex-col items-center text-center"
-            >
-              <Settings className="w-8 h-8 text-[#0EA5E9] mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Settings</h3>
-              <p className="text-sm text-gray-400">Configure system settings</p>
+              <div className="flex items-center gap-3 text-[#0EA5E9] mb-4">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+                  />
+                </svg>
+                <span className="font-medium">Database Status</span>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xl font-bold text-green-400">Healthy</div>
+                <div className="text-sm text-gray-400">Last backup: 2h ago</div>
+              </div>
             </motion.div>
           </div>
 
-          {/* Recent Activity Section */}
+          {/* Quick Actions Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="glass-card mt-8 p-6"
+            transition={{ delay: 0.4 }}
+            className="glass-card p-6"
           >
-            <h2 className="text-2xl font-semibold mb-4">Recent Activity</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                <div>
-                  <p className="text-sm font-medium">New Assessment Submitted</p>
-                  <p className="text-xs text-gray-400">2 minutes ago</p>
-                </div>
-                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">New</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                <div>
-                  <p className="text-sm font-medium">Report Generated</p>
-                  <p className="text-xs text-gray-400">1 hour ago</p>
-                </div>
-                <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">Report</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                <div>
-                  <p className="text-sm font-medium">System Update</p>
-                  <p className="text-xs text-gray-400">3 hours ago</p>
-                </div>
-                <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded">System</span>
-              </div>
+            <div className="flex items-center gap-3 text-[#0EA5E9] mb-6">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              <span className="font-medium">Quick Actions</span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button className="p-4 rounded-lg bg-gradient-to-r from-[#F97316] to-[#0EA5E9] text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                <Users className="w-5 h-5" />
+                Export User Data
+              </button>
+              
+              <button className="p-4 rounded-lg bg-gradient-to-r from-[#F97316] to-[#0EA5E9] text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                <FileText className="w-5 h-5" />
+                Generate Report
+              </button>
+              
+              <button className="p-4 rounded-lg bg-gradient-to-r from-[#F97316] to-[#0EA5E9] text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                <Settings className="w-5 h-5" />
+                System Settings
+              </button>
             </div>
           </motion.div>
         </div>
