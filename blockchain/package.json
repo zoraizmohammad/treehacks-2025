@@ -1,0 +1,40 @@
+{
+  "name": "blockchain",
+  "version": "1.0.0",
+  "description": "Blockchain component for private data aggregation",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.ts",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
+    "listener": "ts-node scripts/listener.ts",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "blockchain",
+    "privacy",
+    "homomorphic-encryption",
+    "ethereum"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@types/node": "^20.11.19",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "eslint": "^8.56.0",
+    "hardhat": "^2.22.18",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.4",
+    "ethers": "^6.11.0"
+  }
+}
