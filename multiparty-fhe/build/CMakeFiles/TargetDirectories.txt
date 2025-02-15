@@ -1,0 +1,4 @@
+/Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/CMakeFiles/fhe_server.dir
+/Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/CMakeFiles/fhe_client.dir
+/Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/CMakeFiles/edit_cache.dir
+/Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/CMakeFiles/rebuild_cache.dir
