@@ -32,7 +32,7 @@ const Header = () => {
 
           {/* Admin Login Button */}
           <Link 
-            to="/login" 
+            to="/admin" 
             className="inline-flex items-center text-[#0EA5E9] hover:text-white transition-colors"
           >
             Admin login
