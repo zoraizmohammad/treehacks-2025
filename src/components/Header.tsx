@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 interface HeaderProps {
   isWorkNight?: boolean;
@@ -105,18 +107,28 @@ const Header: React.FC<HeaderProps> = ({ isWorkNight, isTrustedLoans }) => {
           </div>
 
           <div className="flex items-center space-x-6">
-            <select 
-              onChange={(e) => window.location.href = e.target.value}
-              className={`bg-transparent ${getTextColor()} opacity-90 hover:opacity-100 transition-colors cursor-pointer border-none focus:ring-0`}
-              value=""
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="relative"
             >
-              <option value="" disabled>Switch to...</option>
-              {getSwitchOptions().map(option => (
-                <option key={option.route} value={option.route} className="text-black">
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              <select 
+                onChange={(e) => window.location.href = e.target.value}
+                className={`appearance-none bg-transparent ${getTextColor()} px-4 py-2 pr-8 rounded-lg border border-gray-300 hover:border-gray-400 transition-colors cursor-pointer focus:ring-2 focus:ring-[#0FA0CE] focus:border-transparent`}
+                value=""
+              >
+                <option value="" disabled>Switch Platform</option>
+                {getSwitchOptions().map(option => (
+                  <option key={option.route} value={option.route} className="text-black bg-white">
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </motion.div>
             <Link 
               to={getAdminRoute()}
               className={isTrustedLoans ? "inline-flex items-center text-[#0FA0CE] hover:text-[#0D8BAD] transition-colors" : "inline-flex items-center text-[#0EA5E9] hover:text-white transition-colors"}
