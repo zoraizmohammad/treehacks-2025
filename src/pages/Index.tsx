@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Lock, Shield } from "lucide-react";
@@ -26,13 +25,26 @@ const Index = () => {
     chronicConditions: [] as string[],
     medications: "",
     allergies: "",
+    dietaryBalance: "",
+    mentalHealth: "",
+    energyLevels: "",
+    generalHealth: "",
+    chronicPain: "",
+    screenTimeImpact: "",
+    mindfulnessPractices: "",
     responseType: "dropdown" as "dropdown" | "written",
     writtenResponses: {
       smokingStatus: "",
       alcoholConsumption: "",
       medications: "",
       allergies: "",
-      chronicConditions: ""
+      chronicConditions: "",
+      dietaryBalance: "",
+      mentalHealth: "",
+      generalHealth: "",
+      chronicPain: "",
+      screenTimeImpact: "",
+      mindfulnessPractices: ""
     }
   });
   
@@ -389,6 +401,138 @@ const Index = () => {
                           <option value="prefer-not-to-say">Prefer not to say</option>
                         </select>
                       </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          How balanced do you consider your daily diet?
+                        </label>
+                        <select
+                          className="input-field"
+                          value={formData.dietaryBalance}
+                          onChange={(e) => setFormData({ ...formData, dietaryBalance: e.target.value })}
+                          required
+                        >
+                          <option value="">Select an option</option>
+                          <option value="very-balanced">Very Balanced</option>
+                          <option value="moderately-balanced">Moderately Balanced</option>
+                          <option value="somewhat-unbalanced">Somewhat Unbalanced</option>
+                          <option value="very-unbalanced">Very Unbalanced</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          In the past month, how frequently have you experienced symptoms of anxiety or depression?
+                        </label>
+                        <select
+                          className="input-field"
+                          value={formData.mentalHealth}
+                          onChange={(e) => setFormData({ ...formData, mentalHealth: e.target.value })}
+                          required
+                        >
+                          <option value="">Select an option</option>
+                          <option value="never">Never</option>
+                          <option value="rarely">Rarely</option>
+                          <option value="sometimes">Sometimes</option>
+                          <option value="often">Often</option>
+                          <option value="always">Always</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          How would you rate your overall energy levels during a typical day?
+                        </label>
+                        <select
+                          className="input-field"
+                          value={formData.energyLevels}
+                          onChange={(e) => setFormData({ ...formData, energyLevels: e.target.value })}
+                          required
+                        >
+                          <option value="">Select an option</option>
+                          <option value="very-high">Very High</option>
+                          <option value="high">High</option>
+                          <option value="moderate">Moderate</option>
+                          <option value="low">Low</option>
+                          <option value="very-low">Very Low</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          How would you describe your overall physical health?
+                        </label>
+                        <select
+                          className="input-field"
+                          value={formData.generalHealth}
+                          onChange={(e) => setFormData({ ...formData, generalHealth: e.target.value })}
+                          required
+                        >
+                          <option value="">Select an option</option>
+                          <option value="excellent">Excellent</option>
+                          <option value="good">Good</option>
+                          <option value="fair">Fair</option>
+                          <option value="poor">Poor</option>
+                          <option value="very-poor">Very Poor</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          In the past month, how often have you experienced chronic pain or physical discomfort?
+                        </label>
+                        <select
+                          className="input-field"
+                          value={formData.chronicPain}
+                          onChange={(e) => setFormData({ ...formData, chronicPain: e.target.value })}
+                          required
+                        >
+                          <option value="">Select an option</option>
+                          <option value="never">Never</option>
+                          <option value="rarely">Rarely</option>
+                          <option value="sometimes">Sometimes</option>
+                          <option value="often">Often</option>
+                          <option value="always">Always</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          How would you rate the impact of your screen time on your overall well-being?
+                        </label>
+                        <select
+                          className="input-field"
+                          value={formData.screenTimeImpact}
+                          onChange={(e) => setFormData({ ...formData, screenTimeImpact: e.target.value })}
+                          required
+                        >
+                          <option value="">Select an option</option>
+                          <option value="very-positive">Very Positive</option>
+                          <option value="somewhat-positive">Somewhat Positive</option>
+                          <option value="neutral">Neutral</option>
+                          <option value="somewhat-negative">Somewhat Negative</option>
+                          <option value="very-negative">Very Negative</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          How frequently do you engage in mindfulness, meditation, or other relaxation practices?
+                        </label>
+                        <select
+                          className="input-field"
+                          value={formData.mindfulnessPractices}
+                          onChange={(e) => setFormData({ ...formData, mindfulnessPractices: e.target.value })}
+                          required
+                        >
+                          <option value="">Select an option</option>
+                          <option value="daily">Daily</option>
+                          <option value="few-times-week">A few times a week</option>
+                          <option value="once-week">Once a week</option>
+                          <option value="rarely">Rarely</option>
+                          <option value="never">Never</option>
+                        </select>
+                      </div>
                     </>
                   ) : (
                     <>
@@ -504,6 +648,144 @@ const Index = () => {
                         />
                         <p className="text-xs text-gray-500 text-right">
                           {250 - formData.writtenResponses.chronicConditions.length} characters remaining
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Please describe your dietary balance and any challenges you face
+                        </label>
+                        <textarea
+                          className="input-field min-h-[100px]"
+                          value={formData.writtenResponses.dietaryBalance}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            writtenResponses: {
+                              ...formData.writtenResponses,
+                              dietaryBalance: e.target.value.slice(0, 250)
+                            }
+                          })}
+                          maxLength={250}
+                          placeholder="Describe your dietary habits and any challenges..."
+                          required
+                        />
+                        <p className="text-xs text-gray-500 text-right">
+                          {250 - formData.writtenResponses.dietaryBalance.length} characters remaining
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Please describe your mental health experiences if you feel comfortable sharing
+                        </label>
+                        <textarea
+                          className="input-field min-h-[100px]"
+                          value={formData.writtenResponses.mentalHealth}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            writtenResponses: {
+                              ...formData.writtenResponses,
+                              mentalHealth: e.target.value.slice(0, 250)
+                            }
+                          })}
+                          maxLength={250}
+                          placeholder="Share your mental health experiences..."
+                          required
+                        />
+                        <p className="text-xs text-gray-500 text-right">
+                          {250 - formData.writtenResponses.mentalHealth.length} characters remaining
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Please elaborate on your general health concerns
+                        </label>
+                        <textarea
+                          className="input-field min-h-[100px]"
+                          value={formData.writtenResponses.generalHealth}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            writtenResponses: {
+                              ...formData.writtenResponses,
+                              generalHealth: e.target.value.slice(0, 250)
+                            }
+                          })}
+                          maxLength={250}
+                          placeholder="Describe any specific health concerns..."
+                          required
+                        />
+                        <p className="text-xs text-gray-500 text-right">
+                          {250 - formData.writtenResponses.generalHealth.length} characters remaining
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Please describe any chronic pain or discomfort you experience
+                        </label>
+                        <textarea
+                          className="input-field min-h-[100px]"
+                          value={formData.writtenResponses.chronicPain}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            writtenResponses: {
+                              ...formData.writtenResponses,
+                              chronicPain: e.target.value.slice(0, 250)
+                            }
+                          })}
+                          maxLength={250}
+                          placeholder="Describe the nature or location of any pain..."
+                          required
+                        />
+                        <p className="text-xs text-gray-500 text-right">
+                          {250 - formData.writtenResponses.chronicPain.length} characters remaining
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Please share any concerns related to your screen time
+                        </label>
+                        <textarea
+                          className="input-field min-h-[100px]"
+                          value={formData.writtenResponses.screenTimeImpact}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            writtenResponses: {
+                              ...formData.writtenResponses,
+                              screenTimeImpact: e.target.value.slice(0, 250)
+                            }
+                          })}
+                          maxLength={250}
+                          placeholder="Share any specific concerns about screen time..."
+                          required
+                        />
+                        <p className="text-xs text-gray-500 text-right">
+                          {250 - formData.writtenResponses.screenTimeImpact.length} characters remaining
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Please describe your mindfulness and relaxation practices
+                        </label>
+                        <textarea
+                          className="input-field min-h-[100px]"
+                          value={formData.writtenResponses.mindfulnessPractices}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            writtenResponses: {
+                              ...formData.writtenResponses,
+                              mindfulnessPractices: e.target.value.slice(0, 250)
+                            }
+                          })}
+                          maxLength={250}
+                          placeholder="Share what practices you find most beneficial..."
+                          required
+                        />
+                        <p className="text-xs text-gray-500 text-right">
+                          {250 - formData.writtenResponses.mindfulnessPractices.length} characters remaining
                         </p>
                       </div>
                     </>
