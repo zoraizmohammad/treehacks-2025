@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -83,6 +82,26 @@ const WorkNight = () => {
   };
 
   const handleNext = () => {
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      address,
+      city,
+      state,
+      resume
+    } = formData.personalInfo;
+
+    if (!firstName || !lastName || !email || !phone || !address || !city || !state || !resume) {
+      toast({
+        title: "Required Fields Missing",
+        description: "Please fill out all required fields before continuing.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setCurrentStep(2);
     toast({
       title: "Progress Saved",
@@ -133,6 +152,20 @@ const WorkNight = () => {
               <div>
                 <h2 className="text-xl font-semibold mb-6 text-black">My Information</h2>
                 <form className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                      Resume <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-black"
+                      required
+                    />
+                    <p className="text-sm text-gray-500 mt-1">Accepted formats: PDF, DOC, DOCX</p>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-2">
                       Legal Name <span className="text-red-500">*</span>
@@ -256,8 +289,74 @@ const WorkNight = () => {
               </div>
             ) : (
               <div>
+                <div className="mb-8 space-y-4">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-orange-500">🔒</span>
+                        <h3 className="font-medium text-gray-900">End-to-End Encryption</h3>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        All data is encrypted right in your browser using advanced homomorphic encryption, so no one—not even us—can see your individual responses.
+                      </p>
+                    </div>
+                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-blue-500">🛡️</span>
+                        <h3 className="font-medium text-gray-900">Privacy Guaranteed</h3>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        Only aggregate results are ever decrypted. Your personal information remains hidden and cannot be accessed by any unauthorized parties.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <h2 className="text-xl font-semibold mb-6 text-black">Self Identification</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                      Age Range <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-black"
+                      value={formData.voluntaryDisclosure.ageRange}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        voluntaryDisclosure: { ...formData.voluntaryDisclosure, ageRange: e.target.value }
+                      })}
+                      required
+                    >
+                      <option value="">Select Age Range</option>
+                      <option value="18-24">18-24 years</option>
+                      <option value="25-34">25-34 years</option>
+                      <option value="35-44">35-44 years</option>
+                      <option value="45-54">45-54 years</option>
+                      <option value="55+">55 years or older</option>
+                      <option value="decline">Prefer not to say</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                      Disability Status <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-black"
+                      value={formData.voluntaryDisclosure.disability}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        voluntaryDisclosure: { ...formData.voluntaryDisclosure, disability: e.target.value }
+                      })}
+                      required
+                    >
+                      <option value="">Select Disability Status</option>
+                      <option value="yes">Yes, I have a disability (or have a history/record of having one)</option>
+                      <option value="no">No, I don't have a disability</option>
+                      <option value="decline">I don't wish to answer</option>
+                    </select>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-2">
                       Gender
