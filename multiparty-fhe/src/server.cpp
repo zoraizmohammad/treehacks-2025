@@ -2,6 +2,7 @@
 #include "crow.h"
 #include <iostream>
 #include <string>
+#include <sstream>
 
 using namespace lbcrypto;
 
@@ -39,8 +40,15 @@ public:
 
     // Serialize public key to string (simplified version)
     std::string serializePublicKey() {
-        // Note: In a real implementation, you would properly serialize the key
-        return "serialized_public_key";
+        try {
+            std::stringstream ss;
+            // Use JSON serialization instead of binary
+            Serial::Serialize(keyPair.publicKey, ss, SerType::JSON);
+            return ss.str();
+        } catch (const std::exception& e) {
+            std::cout << "Error serializing public key: " << e.what() << std::endl;
+            return "";
+        }
     }
 
     // Process client's key contribution
