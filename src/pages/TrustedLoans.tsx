@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
@@ -90,6 +89,18 @@ const TrustedLoans = () => {
     });
   };
 
+  const calculateSectionCompletion = (section: 'personal' | 'employment' | 'demographics') => {
+    const sectionData = formData[section];
+    const totalFields = Object.keys(sectionData).length;
+    const filledFields = Object.values(sectionData).filter(value => value !== "").length;
+    return Math.round((filledFields / totalFields) * 100);
+  };
+
+  const personalCompletion = calculateSectionCompletion('personal');
+  const employmentCompletion = calculateSectionCompletion('employment');
+  const demographicsCompletion = calculateSectionCompletion('demographics');
+  const totalCompletion = Math.round((personalCompletion + employmentCompletion + demographicsCompletion) / 3);
+
   return (
     <div className="min-h-screen bg-white">
       <Header isTrustedLoans />
@@ -100,15 +111,66 @@ const TrustedLoans = () => {
           className="text-center mb-8"
         >
           <h1 className="text-3xl font-bold text-[#0FA0CE] mb-4">Personal Loan Application</h1>
-          <div className="mb-8">
+          <div className="mb-4">
             <Progress value={progress} className="h-2 bg-gray-100" />
-            <div className="flex justify-between mt-2 text-sm text-gray-600">
-              <span>Personal Info</span>
-              <span>Employment & Loan</span>
-              <span>Demographics</span>
+          </div>
+          
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex flex-col items-center">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${
+                currentStep === 1 ? 'border-[#0FA0CE] bg-[#0FA0CE] text-white' : 
+                personalCompletion === 100 ? 'border-green-500 bg-green-500 text-white' :
+                'border-gray-300 bg-white'
+              }`}>
+                {personalCompletion === 100 ? '✓' : '1'}
+              </div>
+              <span className="text-sm mt-2 text-gray-600">Personal Info</span>
+              <span className="text-xs text-gray-500">{personalCompletion}% complete</span>
+            </div>
+
+            <div className="flex-1 h-[2px] bg-gray-200 mx-4" />
+
+            <div className="flex flex-col items-center">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${
+                currentStep === 2 ? 'border-[#0FA0CE] bg-[#0FA0CE] text-white' :
+                employmentCompletion === 100 ? 'border-green-500 bg-green-500 text-white' :
+                'border-gray-300 bg-white'
+              }`}>
+                {employmentCompletion === 100 ? '✓' : '2'}
+              </div>
+              <span className="text-sm mt-2 text-gray-600">Employment & Loan</span>
+              <span className="text-xs text-gray-500">{employmentCompletion}% complete</span>
+            </div>
+
+            <div className="flex-1 h-[2px] bg-gray-200 mx-4" />
+
+            <div className="flex flex-col items-center">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${
+                currentStep === 3 ? 'border-[#0FA0CE] bg-[#0FA0CE] text-white' :
+                demographicsCompletion === 100 ? 'border-green-500 bg-green-500 text-white' :
+                'border-gray-300 bg-white'
+              }`}>
+                {demographicsCompletion === 100 ? '✓' : '3'}
+              </div>
+              <span className="text-sm mt-2 text-gray-600">Demographics</span>
+              <span className="text-xs text-gray-500">{demographicsCompletion}% complete</span>
             </div>
           </div>
+
+          <div className="text-sm text-gray-600">
+            Overall completion: {totalCompletion}%
+          </div>
         </motion.div>
+
+        <style jsx global>{`
+          input, select {
+            color: #000000 !important;
+            background-color: #FFFFFF !important;
+          }
+          input::placeholder, select::placeholder {
+            color: #000000 !important;
+          }
+        `}</style>
 
         <div className="bg-white shadow-lg rounded-lg p-8 border border-gray-200">
           {currentStep === 1 && (
@@ -158,16 +220,20 @@ const TrustedLoans = () => {
                       Social Security Number <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="password"
+                      type="text"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0FA0CE] focus:border-transparent"
-                      value={formData.personal.ssn}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        personal: { ...formData.personal, ssn: e.target.value }
-                      })}
+                      value={formData.personal.ssn.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3')}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^\d]/g, '');
+                        setFormData({
+                          ...formData,
+                          personal: { ...formData.personal, ssn: value }
+                        });
+                      }}
                       placeholder="XXX-XX-XXXX"
                       required
-                      maxLength={9}
+                      maxLength={11}
+                      style={{ color: '#000000' }}
                     />
                   </div>
                 </div>
