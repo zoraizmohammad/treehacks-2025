@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 
 interface ApplicationFormData {
@@ -11,19 +12,21 @@ interface ApplicationFormData {
     lastName: string;
     email: string;
     phone: string;
-    language: string;
-  };
-  experience: {
-    currentTitle: string;
-    yearsExperience: string;
-    education: string;
-    skills: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    university: string;
+    major: string;
+    graduationDate: string;
+    resume: File | null;
   };
   voluntaryDisclosure: {
     disability: string;
-    veteranStatus: string;
-    gender: string;
     ethnicity: string;
+    gender: string;
+    ageRange: string;
+    veteranStatus: string;
   };
 }
 
@@ -33,19 +36,21 @@ const initialFormData: ApplicationFormData = {
     lastName: "",
     email: "",
     phone: "",
-    language: "English",
-  },
-  experience: {
-    currentTitle: "",
-    yearsExperience: "",
-    education: "",
-    skills: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    university: "",
+    major: "",
+    graduationDate: "",
+    resume: null,
   },
   voluntaryDisclosure: {
     disability: "",
-    veteranStatus: "",
-    gender: "",
     ethnicity: "",
+    gender: "",
+    ageRange: "",
+    veteranStatus: "",
   },
 };
 
@@ -54,7 +59,7 @@ const WorkNight = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const { toast } = useToast();
 
-  const totalSteps = 5;
+  const totalSteps = 2;
   const progress = (currentStep / totalSteps) * 100;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -63,6 +68,18 @@ const WorkNight = () => {
       title: "Application Submitted!",
       description: "Your application has been received.",
     });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData({
+        ...formData,
+        personalInfo: {
+          ...formData.personalInfo,
+          resume: e.target.files[0]
+        }
+      });
+    }
   };
 
   return (
@@ -87,102 +104,273 @@ const WorkNight = () => {
             </div>
             <Progress value={progress} className="h-2" />
             <div className="flex justify-between mt-2 text-xs text-gray-500">
-              <span>My Information</span>
-              <span>My Experience</span>
-              <span>Application Questions</span>
-              <span>Voluntary Disclosures</span>
-              <span>Self Identify</span>
+              <span>My Information & Experiences</span>
+              <span>Encrypted Disclosures and Self Identification</span>
             </div>
           </div>
 
-          <div className="glass-card p-8">
-            <h2 className="text-2xl font-semibold mb-6">Self Identify</h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Language <span className="text-red-500">*</span>
-                </label>
-                <select
-                  className="input-field"
-                  value={formData.personalInfo.language}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    personalInfo: { ...formData.personalInfo, language: e.target.value }
-                  })}
-                  required
-                >
-                  <option value="English">English</option>
-                  <option value="Spanish">Spanish</option>
-                  <option value="French">French</option>
-                  <option value="German">German</option>
-                  <option value="Chinese">Chinese</option>
-                </select>
-              </div>
+          <Tabs defaultValue="info" className="glass-card p-8">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger 
+                value="info"
+                onClick={() => setCurrentStep(1)}
+                className="text-white"
+              >
+                My Information & Experiences
+              </TabsTrigger>
+              <TabsTrigger 
+                value="disclosures"
+                onClick={() => setCurrentStep(2)}
+                className="text-white"
+              >
+                Encrypted Disclosures
+              </TabsTrigger>
+            </TabsList>
 
-              <div>
-                <h3 className="text-lg font-medium mb-4">Voluntary Self-Identification of Disability</h3>
-                <div className="bg-gray-900/50 p-4 rounded-lg mb-4">
-                  <p className="text-sm text-gray-400 mb-2">Form CC-305</p>
-                  <p className="text-sm text-gray-400 mb-2">OMB Control Number: 1250-0005</p>
-                  <p className="text-sm text-gray-400">Expires: 04/30/2026</p>
+            <TabsContent value="info">
+              <form className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      First Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      required
+                      value={formData.personalInfo.firstName}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        personalInfo: { ...formData.personalInfo, firstName: e.target.value }
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Last Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      required
+                      value={formData.personalInfo.lastName}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        personalInfo: { ...formData.personalInfo, lastName: e.target.value }
+                      })}
+                    />
+                  </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Name <span className="text-red-500">*</span>
+                    Resume <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileChange}
+                    className="input-field"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      className="input-field"
+                      required
+                      value={formData.personalInfo.email}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        personalInfo: { ...formData.personalInfo, email: e.target.value }
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      className="input-field"
+                      required
+                      value={formData.personalInfo.phone}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        personalInfo: { ...formData.personalInfo, phone: e.target.value }
+                      })}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    University <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     className="input-field"
-                    value={formData.personalInfo.firstName}
+                    required
+                    value={formData.personalInfo.university}
+                    onChange={(e) => setFormData({
+                        ...formData,
+                        personalInfo: { ...formData.personalInfo, university: e.target.value }
+                    })}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Major <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      required
+                      value={formData.personalInfo.major}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        personalInfo: { ...formData.personalInfo, major: e.target.value }
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Expected Graduation Date <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      className="input-field"
+                      required
+                      value={formData.personalInfo.graduationDate}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        personalInfo: { ...formData.personalInfo, graduationDate: e.target.value }
+                      })}
+                    />
+                  </div>
+                </div>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="disclosures">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Voluntary Self-Identification</h3>
+                  <p className="text-sm text-gray-400 mb-6">
+                    Submission of this information is voluntary and refusal to provide it will not subject you to any adverse treatment.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Age Range
+                  </label>
+                  <select
+                    className="input-field"
+                    value={formData.voluntaryDisclosure.ageRange}
                     onChange={(e) => setFormData({
                       ...formData,
-                      personalInfo: { ...formData.personalInfo, firstName: e.target.value }
+                      voluntaryDisclosure: { ...formData.voluntaryDisclosure, ageRange: e.target.value }
                     })}
-                    required
-                  />
+                  >
+                    <option value="">Select an option</option>
+                    <option value="18-24">18-24</option>
+                    <option value="25-34">25-34</option>
+                    <option value="35-44">35-44</option>
+                    <option value="45+">45+</option>
+                    <option value="decline">Prefer not to say</option>
+                  </select>
                 </div>
 
-                <div className="mt-4">
+                <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Employee ID (if applicable)
+                    Gender
                   </label>
-                  <input
-                    type="text"
+                  <select
                     className="input-field"
-                    placeholder="Optional"
-                  />
+                    value={formData.voluntaryDisclosure.gender}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      voluntaryDisclosure: { ...formData.voluntaryDisclosure, gender: e.target.value }
+                    })}
+                  >
+                    <option value="">Select an option</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="non-binary">Non-binary</option>
+                    <option value="other">Other</option>
+                    <option value="decline">Prefer not to say</option>
+                  </select>
                 </div>
 
-                <div className="mt-4">
+                <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Date <span className="text-red-500">*</span>
+                    Race/Ethnicity
                   </label>
-                  <input
-                    type="date"
+                  <select
                     className="input-field"
-                    required
-                  />
+                    value={formData.voluntaryDisclosure.ethnicity}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      voluntaryDisclosure: { ...formData.voluntaryDisclosure, ethnicity: e.target.value }
+                    })}
+                  >
+                    <option value="">Select an option</option>
+                    <option value="asian">Asian</option>
+                    <option value="black">Black or African American</option>
+                    <option value="hispanic">Hispanic or Latino</option>
+                    <option value="native">Native American or Alaska Native</option>
+                    <option value="pacific">Native Hawaiian or Pacific Islander</option>
+                    <option value="white">White</option>
+                    <option value="multiple">Two or More Races</option>
+                    <option value="decline">Prefer not to say</option>
+                  </select>
                 </div>
-              </div>
 
-              <div className="flex justify-between mt-8">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-                  className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Previous
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
-                >
-                  Submit Application
-                </button>
-              </div>
-            </form>
-          </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Disability Status
+                  </label>
+                  <select
+                    className="input-field"
+                    value={formData.voluntaryDisclosure.disability}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      voluntaryDisclosure: { ...formData.voluntaryDisclosure, disability: e.target.value }
+                    })}
+                  >
+                    <option value="">Select an option</option>
+                    <option value="yes">Yes, I have a disability</option>
+                    <option value="no">No, I don't have a disability</option>
+                    <option value="decline">Prefer not to say</option>
+                  </select>
+                </div>
+
+                <div className="flex justify-between mt-8">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(1)}
+                    className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
+                  >
+                    Submit Application
+                  </button>
+                </div>
+              </form>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
