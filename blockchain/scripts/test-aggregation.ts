@@ -3,7 +3,8 @@ import { PrivateDataAggregator } from "../typechain-types";
 
 async function main() {
     // Get the contract instance
-    const contractAddress = "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0";
+    const contractAddress = process.env.CONTRACT_ADDRESS || "0x1399230a24D85be6AB8ce794e39B667058A445d3";
+    console.log("Using contract at:", contractAddress);
     const contract = await ethers.getContractAt("PrivateDataAggregator", contractAddress);
 
     console.log("Testing PrivateDataAggregator contract...\n");
@@ -19,26 +20,42 @@ async function main() {
             return ethers.toUtf8Bytes(JSON.stringify(mockData));
         });
 
-        await contract.requestAggregation("average", insufficientData);
+        console.log("Submitting insufficient data (5 records)...");
+        const tx1 = await contract.requestAggregation("average", insufficientData, {
+            gasLimit: 1000000,
+            maxFeePerGas: ethers.parseUnits("100", "gwei"),
+            maxPriorityFeePerGas: ethers.parseUnits("2", "gwei")
+        });
+        await tx1.wait();
     } catch (error: any) {
-        console.log("Error (expected):", error.message.split("'")[0]);
+        console.log("Error (expected):", error.message);
     }
 
     // Test Scenario 2: Submit valid aggregation request
     console.log("\nScenario 2: Submitting valid aggregation request");
     try {
         // Create 10 encrypted data rows
+        console.log("Creating 10 test data records...");
         const validData = Array(10).fill(0).map((_, index) => {
             const mockData = {
                 value: Math.floor(Math.random() * 1000),
                 timestamp: Date.now(),
                 index: index
             };
-            return ethers.toUtf8Bytes(JSON.stringify(mockData));
+            const jsonData = JSON.stringify(mockData);
+            console.log(`Record ${index}:`, jsonData);
+            return ethers.toUtf8Bytes(jsonData);
         });
 
-        const tx = await contract.requestAggregation("average", validData);
-        const receipt = await tx.wait();
+        console.log("\nSubmitting aggregation request...");
+        const tx2 = await contract.requestAggregation("average", validData, {
+            gasLimit: 1000000,
+            maxFeePerGas: ethers.parseUnits("100", "gwei"),
+            maxPriorityFeePerGas: ethers.parseUnits("2", "gwei")
+        });
+        console.log("Transaction hash:", tx2.hash);
+        const receipt = await tx2.wait();
+        console.log("Transaction mined in block:", receipt?.blockNumber);
 
         // Get request ID from event
         const requestedEvent = receipt?.logs.find(
@@ -52,7 +69,7 @@ async function main() {
             });
             const requestId = decodedEvent?.args[0];
 
-            console.log("Aggregation request created!");
+            console.log("\nAggregation request created!");
             console.log(`Request ID: ${requestId}`);
             console.log(`Data count: ${decodedEvent?.args[3]}`);
             console.log(`Aggregation type: ${decodedEvent?.args[2]}`);
@@ -68,25 +85,10 @@ async function main() {
             console.log(`Processed: ${isProcessed}`);
             console.log(`Data count: ${dataCount}`);
 
-            // Mark request as processed
-            const processTx = await contract.markRequestProcessed(requestId);
-            await processTx.wait();
-            console.log("\nRequest marked as processed");
-
-            // Verify processed status
-            const [, , , newProcessedStatus,] = await contract.getAggregationRequest(requestId);
-            console.log(`New processed status: ${newProcessedStatus}`);
+            console.log("\nWaiting for listener to process the request...");
         }
     } catch (error: any) {
         console.error("Error:", error.message);
-    }
-
-    // Test Scenario 3: Try to process same request again
-    console.log("\nScenario 3: Testing double processing prevention");
-    try {
-        await contract.markRequestProcessed(0);
-    } catch (error: any) {
-        console.log("Error (expected):", error.message.split("'")[0]);
     }
 }
 

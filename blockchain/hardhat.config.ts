@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.20",
@@ -22,7 +24,11 @@ const config: HardhatUserConfig = {
       url: "http://127.0.0.1:8545",
       chainId: 1337
     },
-    // Add other networks as needed (testnet, mainnet, etc.)
+    holesky: {
+      url: "https://ethereum-holesky.publicnode.com",
+      chainId: 17000,
+      accounts: [PRIVATE_KEY]
+    }
   },
   paths: {
     sources: "./contracts",

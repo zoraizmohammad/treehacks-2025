@@ -28,6 +28,11 @@ class BlockchainListener {
     private wallet: ethers.Wallet;
 
     constructor() {
+        console.log("Initializing BlockchainListener...");
+        console.log("Provider URL:", config.providerUrl);
+        console.log("Contract Address:", config.contractAddress);
+        console.log("API URL:", config.aggregatorApiUrl);
+
         // Initialize provider and contract
         this.provider = new ethers.JsonRpcProvider(config.providerUrl);
         this.wallet = new ethers.Wallet(config.privateKey, this.provider);
@@ -39,15 +44,19 @@ class BlockchainListener {
 
         // Listen for AggregationRequested events
         this.contract.on("AggregationRequested", async (requestId: bigint, requester: string, aggregationType: string, dataCount: bigint) => {
-            console.log(`New aggregation request: ${requestId}`);
+            console.log(`\nNew aggregation request detected:`);
+            console.log(`Request ID: ${requestId}`);
             console.log(`Requester: ${requester}`);
             console.log(`Type: ${aggregationType}`);
             console.log(`Data count: ${dataCount}`);
 
             try {
+                console.log("Fetching encrypted data from contract...");
                 // Get the encrypted data rows
                 const encryptedData = await this.contract.getAggregationData(requestId);
+                console.log(`Retrieved ${encryptedData.length} encrypted data rows`);
 
+                console.log("Calling aggregator API...");
                 // Call the Web2 aggregator API
                 const response = await axios.post(config.aggregatorApiUrl, {
                     requestId: requestId.toString(),
@@ -57,14 +66,20 @@ class BlockchainListener {
                     encryptedData: encryptedData.map((row: Uint8Array) => ethers.hexlify(row))
                 });
 
+                console.log("API Response:", response.data);
+
                 if (response.data.success) {
+                    console.log("Marking request as processed...");
                     // Mark the request as processed
                     const tx = await this.contract.markRequestProcessed(requestId);
                     await tx.wait();
                     console.log(`Request ${requestId} processed successfully`);
                 }
-            } catch (error) {
-                console.error(`Error processing request ${requestId}:`, error);
+            } catch (error: any) {
+                console.error(`Error processing request ${requestId}:`, error.message);
+                if (error.response) {
+                    console.error("API Response:", error.response.data);
+                }
             }
         });
 
