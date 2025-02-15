@@ -1,3 +1,5 @@
+#define CROW_CONFIG_MAX_REQUEST_BODY_LENGTH 20971520  // 20MB
+
 #include <openfhe/pke/openfhe.h>
 #include "crow.h"
 #include <iostream>
@@ -68,46 +70,44 @@ public:
 int main() {
     FHEServer server;
     crow::SimpleApp app;
+    
+    app.server_name("FHE Server")
+       .port(8080)
+       .multithreaded();
 
-    // Health check endpoint
-    CROW_ROUTE(app, "/health")
+    // Public key endpoint
+    CROW_ROUTE(app, "/publicKey")
     ([&server]() {
         if (!server.isReady()) {
-            return crow::response(503, "Server not ready");
+            return crow::response(500, "Server not initialized");
         }
-        return crow::response(200, "Server is ready");
-    });
-
-    // Endpoint to get server's public key
-    CROW_ROUTE(app, "/publicKey").methods("GET"_method)
-    ([&server]() {
-        if (!server.isReady()) {
-            return crow::response(503, "Server not ready");
-        }
-
+        
         crow::json::wvalue response;
         response["publicKey"] = server.serializePublicKey();
-        return crow::response(response);
+        return crow::response(response.dump());
     });
 
-    // Endpoint to receive client's key
+    // Join key endpoint
     CROW_ROUTE(app, "/joinKey").methods("POST"_method)
     ([&server](const crow::request& req) {
-        auto x = crow::json::load(req.body);
-        if (!x) {
-            return crow::response(400, "Invalid JSON");
-        }
+        try {
+            auto x = crow::json::load(req.body);
+            if (!x) {
+                return crow::response(400, "Invalid JSON");
+            }
 
-        std::string clientKey = x["clientKey"].s();
-        if (server.processClientKey(clientKey)) {
-            return crow::response(200, "Key processed successfully");
-        } else {
-            return crow::response(500, "Failed to process key");
+            std::string clientKey = x["clientKey"].s();
+            if (server.processClientKey(clientKey)) {
+                return crow::response(200, "Joint key pair generated successfully");
+            } else {
+                return crow::response(500, "Failed to generate joint key pair");
+            }
+        } catch (const std::exception& e) {
+            return crow::response(500, std::string("Server error: ") + e.what());
         }
     });
 
-    // Start server
     std::cout << "Starting server on port 8080..." << std::endl;
-    app.port(8080).run();
+    app.run();
     return 0;
 }

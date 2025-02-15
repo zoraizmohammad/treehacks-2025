@@ -107,35 +107,63 @@ public:
             return false;
         }
 
-        // Serialize client's public key
-        std::stringstream ss;
-        Serial::Serialize(keyPair.publicKey, ss, SerType::BINARY);
-        std::string serializedKey = ss.str();
+        try {
+            // Serialize client's public key
+            std::stringstream ss;
+            Serial::Serialize(keyPair.publicKey, ss, SerType::JSON);  // Changed to JSON format
+            std::string serializedKey = ss.str();
 
-        // Prepare JSON payload
-        crow::json::wvalue payload;
-        payload["clientKey"] = serializedKey;
-        std::string jsonStr = payload.dump();
+            // Debug output
+            std::cout << "Serialized key size: " << serializedKey.length() << " bytes" << std::endl;
 
-        std::string url = "http://localhost:8080/joinKey";
-        struct curl_slist* headers = NULL;
-        headers = curl_slist_append(headers, "Content-Type: application/json");
+            // Prepare JSON payload using nlohmann/json
+            json payload;
+            payload["clientKey"] = serializedKey;
+            std::string jsonStr = payload.dump();
 
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonStr.c_str());
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+            // Debug output
+            std::cout << "Sending request to: http://localhost:8080/joinKey" << std::endl;
+            std::cout << "Payload size: " << jsonStr.length() << " bytes" << std::endl;
 
-        CURLcode res = curl_easy_perform(curl);
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
+            std::string url = "http://localhost:8080/joinKey";
+            struct curl_slist* headers = NULL;
+            headers = curl_slist_append(headers, "Content-Type: application/json");
 
-        if (res != CURLE_OK) {
-            std::cout << "Failed to send client's key" << std::endl;
+            // Store response and error message
+            std::string response_string;
+            char errbuf[CURL_ERROR_SIZE];
+            errbuf[0] = 0;
+
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonStr.c_str());
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+            curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+            
+            // Add verbose debug output
+            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+            CURLcode res = curl_easy_perform(curl);
+            curl_slist_free_all(headers);
+            curl_easy_cleanup(curl);
+
+            if (res != CURLE_OK) {
+                std::cout << "CURL error: " << curl_easy_strerror(res) << std::endl;
+                if (strlen(errbuf) > 0) {
+                    std::cout << "Error buffer: " << errbuf << std::endl;
+                }
+                return false;
+            }
+
+            // Print server response
+            std::cout << "Server response: " << response_string << std::endl;
+            
+            return true;
+        } catch (const std::exception& e) {
+            std::cout << "Error sending client key: " << e.what() << std::endl;
             return false;
         }
-
-        std::cout << "Client key sent successfully" << std::endl;
-        return true;
     }
 };
 
