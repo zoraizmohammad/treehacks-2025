@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import Header from "@/components/Header";
 import { useToast } from "@/hooks/use-toast";
+import SecurityInfo from "@/components/SecurityInfo";
 
 const initialFormData = {
   personal: {
@@ -89,6 +90,7 @@ const US_STATES = [
 const TrustedLoans = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(initialFormData);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
   const totalSteps = 3;
@@ -136,11 +138,7 @@ const TrustedLoans = () => {
       return;
     }
 
-    toast({
-      title: "Form Submitted Successfully!",
-      description: "Your information is secure and protected through Dual Key homomorphic encryption.",
-      className: "bg-white text-black border border-black",
-    });
+    setIsSubmitted(true);
   };
 
   const calculateSectionCompletion = (section: 'personal' | 'employment' | 'demographics') => {
@@ -154,6 +152,27 @@ const TrustedLoans = () => {
   const employmentCompletion = calculateSectionCompletion('employment');
   const demographicsCompletion = calculateSectionCompletion('demographics');
   const totalCompletion = Math.round((personalCompletion + employmentCompletion + demographicsCompletion) / 3);
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header isTrustedLoans />
+        <div className="max-w-4xl mx-auto p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <h1 className="text-3xl font-bold text-[#0FA0CE] mb-8">Application Success</h1>
+            <p className="text-gray-600 mb-8">
+              Your information is secure and protected through Dual Key homomorphic encryption.
+            </p>
+            <SecurityInfo />
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -656,6 +675,10 @@ const TrustedLoans = () => {
                     <option value="65-plus">65 or older</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <SecurityInfo />
               </div>
             </motion.div>
           )}
