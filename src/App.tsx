@@ -9,6 +9,8 @@ import WorkNight from "./pages/WorkNight";
 import Form from "./pages/Form";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/Admin";
+import TrustedLoans from "./pages/TrustedLoans";
+import TrustedLoansAdmin from "./pages/TrustedLoansAdmin";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +24,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/worknight" element={<WorkNight />} />
           <Route path="/worknight/admin" element={<AdminDashboard />} />
+          <Route path="/trustedloans" element={<TrustedLoans />} />
+          <Route path="/trustedloans/admin" element={<TrustedLoansAdmin />} />
           <Route path="/form" element={<Form />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
