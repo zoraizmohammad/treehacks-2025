@@ -70,6 +70,7 @@ public:
 int main() {
     FHEServer server;
     crow::SimpleApp app;
+
     
     app.server_name("FHE Server")
        .port(8080)
@@ -90,12 +91,12 @@ int main() {
     // Join key endpoint
     CROW_ROUTE(app, "/joinKey").methods("POST"_method)
     ([&server](const crow::request& req) {
+        std::cout << "Received payload size: " << req.body.size() << " bytes\n";
         try {
             auto x = crow::json::load(req.body);
             if (!x) {
                 return crow::response(400, "Invalid JSON");
             }
-
             std::string clientKey = x["clientKey"].s();
             if (server.processClientKey(clientKey)) {
                 return crow::response(200, "Joint key pair generated successfully");

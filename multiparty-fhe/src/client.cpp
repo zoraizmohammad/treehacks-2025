@@ -110,7 +110,7 @@ public:
         try {
             // Serialize client's public key
             std::stringstream ss;
-            Serial::Serialize(keyPair.publicKey, ss, SerType::JSON);  // Changed to JSON format
+            Serial::Serialize(keyPair.publicKey, ss, SerType::JSON); 
             std::string serializedKey = ss.str();
 
             // Debug output
