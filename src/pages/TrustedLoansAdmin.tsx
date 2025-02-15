@@ -88,21 +88,4 @@ const TrustedLoansAdmin = () => {
                 Review Applications
               </button>
               
-              <button className="p-4 rounded-lg bg-white border border-[#0FA0CE] text-[#0FA0CE] font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
-                <FileText className="w-5 h-5" />
-                Generate Reports
-              </button>
-              
-              <button className="p-4 rounded-lg bg-white border border-[#0FA0CE] text-[#0FA0CE] font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
-                <Database className="w-5 h-5" />
-                System Settings
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default TrustedLoansAdmin;
+              <button className="p-4 
