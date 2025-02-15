@@ -25,10 +25,7 @@ const Header: React.FC<HeaderProps> = ({ isWorkNight }) => {
                     Jobs
                   </Link>
                   <Link to="/career-path" className="text-white/90 hover:text-white transition-colors">
-                    Career Path
-                  </Link>
-                  <Link to="/benefits" className="text-white/90 hover:text-white transition-colors">
-                    Benefits
+                    Explore Career Paths
                   </Link>
                 </>
               ) : (
