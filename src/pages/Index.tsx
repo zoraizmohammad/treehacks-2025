@@ -219,28 +219,17 @@ const Index = () => {
                   <span>High</span>
                 </div>
               </div>
-
-              <button type="submit" className="glass-button w-full">
-                Submit Securely
-              </button>
-
-              <p className="text-xs text-gray-500 text-center mt-4">
-                Your data will be encrypted using public key:{" "}
-                <code className="bg-black/20 px-2 py-1 rounded">
-                  pk_demo123
-                </code>
-              </p>
             </form>
           </motion.div>
 
-          {/* Second Column - Demographic Information */}
+          {/* Second Column - Mental Health Demographic Information */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="glass-card p-8 relative overflow-hidden"
           >
             <div className="encryption-visualizer" />
-            <h2 className="text-2xl font-bold mb-6 rainbow-text">Demographic Information</h2>
+            <h2 className="text-2xl font-bold mb-6 rainbow-text">Mental Health Demographic Information</h2>
             <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
