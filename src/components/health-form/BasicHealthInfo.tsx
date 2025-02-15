@@ -176,6 +176,25 @@ const BasicHealthInfo: React.FC<BasicHealthInfoProps> = ({ formData, setFormData
             <option value="very-low">Very Low</option>
           </select>
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            How would you rate your sleep quality during academic periods?
+          </label>
+          <select
+            className="input-field"
+            value={formData.sleepQuality}
+            onChange={(e) => setFormData({ ...formData, sleepQuality: e.target.value })}
+            required
+          >
+            <option value="">Select an option</option>
+            <option value="excellent">Excellent</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="poor">Poor</option>
+            <option value="very-poor">Very Poor</option>
+          </select>
+        </div>
       </form>
     </motion.div>
   );

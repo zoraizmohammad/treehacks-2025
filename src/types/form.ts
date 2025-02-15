@@ -20,6 +20,7 @@ export interface HealthFormData {
   bloodType: string;
   exerciseFrequency: string;
   sleepHours: string;
+  sleepQuality: string;
   dietaryBalance: string;
   mentalHealth: string;
   energyLevels: string;

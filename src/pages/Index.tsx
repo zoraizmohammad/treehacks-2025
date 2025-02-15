@@ -22,6 +22,7 @@ const initialFormData: HealthFormData = {
   bloodType: "",
   exerciseFrequency: "3",
   sleepHours: "7",
+  sleepQuality: "",
   dietaryBalance: "",
   mentalHealth: "",
   energyLevels: "",
