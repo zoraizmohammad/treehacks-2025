@@ -48,7 +48,7 @@ const TrustedLoans = () => {
         toast({
           title: "Required Fields Missing",
           description: "Please fill out all required fields before continuing.",
-          variant: "destructive",
+          className: "bg-white text-black border border-black",
         });
         return;
       }
@@ -58,7 +58,7 @@ const TrustedLoans = () => {
         toast({
           title: "Required Fields Missing",
           description: "Please fill out all required fields before continuing.",
-          variant: "destructive",
+          className: "bg-white text-black border border-black",
         });
         return;
       }
@@ -128,7 +128,9 @@ const TrustedLoans = () => {
               <span className="text-xs text-gray-500">{personalCompletion}% complete</span>
             </div>
 
-            <div className="flex-1 h-[2px] bg-gray-200 mx-4" />
+            <div className={`flex-1 h-[2px] transition-colors duration-300 ${
+              personalCompletion === 100 ? 'bg-green-500' : 'bg-gray-200'
+            }`} />
 
             <div className="flex flex-col items-center">
               <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${
@@ -142,7 +144,9 @@ const TrustedLoans = () => {
               <span className="text-xs text-gray-500">{employmentCompletion}% complete</span>
             </div>
 
-            <div className="flex-1 h-[2px] bg-gray-200 mx-4" />
+            <div className={`flex-1 h-[2px] transition-colors duration-300 ${
+              employmentCompletion === 100 ? 'bg-green-500' : 'bg-gray-200'
+            }`} />
 
             <div className="flex flex-col items-center">
               <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${

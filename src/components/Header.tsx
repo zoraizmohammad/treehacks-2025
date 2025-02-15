@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -34,6 +33,25 @@ const Header: React.FC<HeaderProps> = ({ isWorkNight, isTrustedLoans }) => {
   const getTextColor = () => {
     if (isTrustedLoans) return "text-gray-800";
     return "text-white";
+  };
+
+  const getSwitchOptions = () => {
+    if (isTrustedLoans) {
+      return [
+        { label: "MindfulUniversity", route: "/" },
+        { label: "WorkNight", route: "/worknight" }
+      ];
+    }
+    if (isWorkNight) {
+      return [
+        { label: "MindfulUniversity", route: "/" },
+        { label: "TrustedLoans", route: "/trustedloans" }
+      ];
+    }
+    return [
+      { label: "WorkNight", route: "/worknight" },
+      { label: "TrustedLoans", route: "/trustedloans" }
+    ];
   };
 
   return (
@@ -87,12 +105,18 @@ const Header: React.FC<HeaderProps> = ({ isWorkNight, isTrustedLoans }) => {
           </div>
 
           <div className="flex items-center space-x-6">
-            <Link 
-              to={isTrustedLoans ? "/" : isWorkNight ? "/" : "/worknight"} 
-              className={`${getTextColor()} opacity-90 hover:opacity-100 transition-colors`}
+            <select 
+              onChange={(e) => window.location.href = e.target.value}
+              className={`bg-transparent ${getTextColor()} opacity-90 hover:opacity-100 transition-colors cursor-pointer border-none focus:ring-0`}
+              value=""
             >
-              Switch to {isTrustedLoans ? "MindfulUniversity" : isWorkNight ? "MindfulUniversity" : "WorkNight"}
-            </Link>
+              <option value="" disabled>Switch to...</option>
+              {getSwitchOptions().map(option => (
+                <option key={option.route} value={option.route} className="text-black">
+                  {option.label}
+                </option>
+              ))}
+            </select>
             <Link 
               to={getAdminRoute()}
               className={isTrustedLoans ? "inline-flex items-center text-[#0FA0CE] hover:text-[#0D8BAD] transition-colors" : "inline-flex items-center text-[#0EA5E9] hover:text-white transition-colors"}
