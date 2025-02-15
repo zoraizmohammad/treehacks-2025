@@ -28,10 +28,19 @@ endif()
 # Find OpenMP
 find_package(OpenMP REQUIRED)
 
-# Find OpenFHE - add these lines to help find the package
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/usr/local/lib/OpenFHE")
-find_package(OpenFHE 1.0.0 REQUIRED)
-message(STATUS "Found OpenFHE: ${OpenFHE_DIR}")
+# Add OpenFHE directory to CMAKE_PREFIX_PATH
+list(APPEND CMAKE_PREFIX_PATH "/usr/local/lib/cmake/OpenFHE")
+
+# Find OpenFHE
+find_package(OpenFHE CONFIG REQUIRED)
+if (OpenFHE_FOUND)
+    message(STATUS "Found OpenFHE")
+    message(STATUS "OpenFHE Version: ${BASE_OPENFHE_VERSION}")
+    message(STATUS "OpenFHE include files: ${OpenFHE_INCLUDE}")
+    message(STATUS "OpenFHE lib location: ${OpenFHE_LIBDIR}")
+else()
+    message(FATAL_ERROR "OpenFHE NOT FOUND")
+endif()
 
 # Find dependencies for Crow
 find_package(Boost REQUIRED COMPONENTS system)
@@ -40,25 +49,22 @@ find_package(OpenSSL REQUIRED)
 # Find CURL package
 find_package(CURL REQUIRED)
 
-# Add include directory
+# Add include directories
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/Crow/include)
 include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
-include_directories(/usr/local/include)
-include_directories(/usr/local/include/openfhe)
-include_directories(/usr/local/include/openfhe/core)
-include_directories(/usr/local/include/openfhe/pke)
-include_directories(/usr/local/include/openfhe/binfhe)
-# Try this if the above doesn't work: include_directories(/usr/local/include/openfhe)
+include_directories(${OpenFHE_INCLUDE})
+include_directories(${OpenFHE_INCLUDE}/third-party/include)
+include_directories(${OpenFHE_INCLUDE}/core)
+include_directories(${OpenFHE_INCLUDE}/pke)
+include_directories(${OpenFHE_INCLUDE}/binfhe)
 
 # Server executable
 add_executable(fhe_server src/server.cpp)
 target_link_libraries(fhe_server
     PRIVATE
-    OPENFHEpke
-    OPENFHEcore
-    OPENFHEbinfhe
+    ${OpenFHE_SHARED_LIBRARIES}
     Boost::system
     OpenSSL::SSL
     OpenSSL::Crypto
@@ -70,9 +76,7 @@ target_link_libraries(fhe_server
 add_executable(fhe_client src/client.cpp)
 target_link_libraries(fhe_client
     PRIVATE
-    OPENFHEpke
-    OPENFHEcore
-    OPENFHEbinfhe
+    ${OpenFHE_SHARED_LIBRARIES}
     Boost::system
     OpenSSL::SSL
     OpenSSL::Crypto

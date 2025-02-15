@@ -4,7 +4,7 @@
 # compile CXX with /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
 CXX_DEFINES = -DBOOST_SYSTEM_DYN_LINK -DBOOST_SYSTEM_NO_LIB
 
-CXX_INCLUDES = -I/Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/include -I/Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/Crow/include -I/usr/local/include/openfhe -I/usr/local/include/openfhe/core -I/usr/local/include/openfhe/pke -I/usr/local/include/openfhe/binfhe -isystem /usr/local/Cellar/openssl@3/3.4.1/include -isystem /usr/local/include
+CXX_INCLUDES = -I/Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/include -I/Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/Crow/include -I/usr/local/include/openfhe -I/usr/local/include/openfhe/third-party/include -I/usr/local/include/openfhe/core -I/usr/local/include/openfhe/pke -I/usr/local/include/openfhe/binfhe -isystem /usr/local/Cellar/openssl@3/3.4.1/include -isystem /usr/local/include
 
 CXX_FLAGSx86_64 =  -Xpreprocessor -fopenmp -I/usr/local/Cellar/libomp/19.1.7/include -std=gnu++17 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -mmacosx-version-min=14.2 -Xpreprocessor -fopenmp -I/usr/local/Cellar/libomp/19.1.7/include
 
