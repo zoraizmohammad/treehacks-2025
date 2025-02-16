@@ -121,6 +121,7 @@ const WorkNightAdmin = () => {
               value="Operational"
               subtext="Last check: 5m ago"
               delay={0.3}
+              type="status"
             />
           </div>
 

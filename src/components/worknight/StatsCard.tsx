@@ -9,9 +9,31 @@ interface StatsCardProps {
   subtext?: string;
   subtextColor?: string;
   delay?: number;
+  type?: 'status' | 'default';
 }
 
-const StatsCard = ({ icon: Icon, title, value, subtext, subtextColor = "text-gray-600", delay = 0 }: StatsCardProps) => {
+const StatsCard = ({ 
+  icon: Icon, 
+  title, 
+  value, 
+  subtext, 
+  subtextColor = "text-gray-600", 
+  delay = 0,
+  type = 'default' 
+}: StatsCardProps) => {
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'operational':
+        return 'text-green-600';
+      case 'degraded':
+        return 'text-yellow-600';
+      case 'down':
+        return 'text-red-600';
+      default:
+        return 'text-gray-900';
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -24,7 +46,9 @@ const StatsCard = ({ icon: Icon, title, value, subtext, subtextColor = "text-gra
         <span className="font-medium">{title}</span>
       </div>
       <div className="space-y-1">
-        <div className="text-4xl font-bold text-black">{value}</div>
+        <div className={`text-4xl font-bold ${type === 'status' ? getStatusColor(value.toString()) : 'text-black'}`}>
+          {value}
+        </div>
         {subtext && <div className={subtextColor}>{subtext}</div>}
       </div>
     </motion.div>

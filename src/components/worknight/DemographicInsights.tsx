@@ -1,10 +1,8 @@
-
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ScatterChart, Scatter, XAxis, YAxis, ZAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { selfIdentificationVectors } from '@/constants/selfIdentificationVectors';
 
 const DemographicInsights = () => {
   const donutChartRef = useRef<SVGSVGElement>(null);
@@ -174,7 +172,7 @@ const DemographicInsights = () => {
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Age Distribution */}
+        {/* Age Distribution - Polar Area Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -187,30 +185,26 @@ const DemographicInsights = () => {
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={ageData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={ageData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="subject" />
+                    <PolarRadiusAxis />
+                    <Radar
+                      name="Age Groups"
+                      dataKey="A"
+                      stroke="#8884d8"
                       fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {ageData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS.age[index]} />
-                      ))}
-                    </Pie>
+                      fillOpacity={0.6}
+                    />
                     <Legend />
-                  </PieChart>
+                  </RadarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Gender Distribution */}
+        {/* Gender Distribution - Bar Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -223,23 +217,17 @@ const DemographicInsights = () => {
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={genderData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
+                  <BarChart data={genderData}>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="value" fill="#8884d8">
                       {genderData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS.gender[index]} />
                       ))}
-                    </Pie>
-                    <Legend />
-                  </PieChart>
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
@@ -282,7 +270,7 @@ const DemographicInsights = () => {
           </Card>
         </motion.div>
 
-        {/* Ethnicity */}
+        {/* Ethnicity - Bubble Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -295,23 +283,22 @@ const DemographicInsights = () => {
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
+                  <ScatterChart>
+                    <XAxis dataKey="value" name="Percentage" unit="%" />
+                    <YAxis dataKey="ratio" name="Ratio" />
+                    <ZAxis range={[100, 800]} />
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                    <Legend />
+                    <Scatter
+                      name="Ethnicity Distribution"
                       data={ethnicityData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
                       fill="#8884d8"
-                      dataKey="value"
                     >
                       {ethnicityData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS.ethnicity[index]} />
                       ))}
-                    </Pie>
-                    <Legend />
-                  </PieChart>
+                    </Scatter>
+                  </ScatterChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
