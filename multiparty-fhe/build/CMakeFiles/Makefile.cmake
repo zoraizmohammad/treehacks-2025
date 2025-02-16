@@ -11,6 +11,10 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.31.5/CMakeCCompiler.cmake"
   "CMakeFiles/3.31.5/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.31.5/CMakeSystem.cmake"
+  "_deps/json-src/CMakeLists.txt"
+  "_deps/json-src/cmake/config.cmake.in"
+  "_deps/json-src/cmake/nlohmann_jsonConfigVersion.cmake.in"
+  "_deps/json-src/cmake/pkg-config.pc.in"
   "/usr/local/lib/OpenFHE/OpenFHEConfig.cmake"
   "/usr/local/lib/OpenFHE/OpenFHEConfigVersion.cmake"
   "/usr/local/lib/OpenFHE/OpenFHETargets-release.cmake"
@@ -45,6 +49,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/local/share/cmake/Modules/CMakeGenericSystem.cmake"
   "/usr/local/share/cmake/Modules/CMakeInitializeConfigs.cmake"
   "/usr/local/share/cmake/Modules/CMakeLanguageInformation.cmake"
+  "/usr/local/share/cmake/Modules/CMakePackageConfigHelpers.cmake"
   "/usr/local/share/cmake/Modules/CMakeParseImplicitIncludeInfo.cmake"
   "/usr/local/share/cmake/Modules/CMakeParseImplicitLinkInfo.cmake"
   "/usr/local/share/cmake/Modules/CMakeParseLibraryArchitecture.cmake"
@@ -113,6 +118,10 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/local/share/cmake/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake"
   "/usr/local/share/cmake/Modules/Compiler/zOS-C-DetermineCompiler.cmake"
   "/usr/local/share/cmake/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake"
+  "/usr/local/share/cmake/Modules/ExternalProject.cmake"
+  "/usr/local/share/cmake/Modules/ExternalProject/shared_internal_commands.cmake"
+  "/usr/local/share/cmake/Modules/FetchContent.cmake"
+  "/usr/local/share/cmake/Modules/FetchContent/CMakeLists.cmake.in"
   "/usr/local/share/cmake/Modules/FindBoost.cmake"
   "/usr/local/share/cmake/Modules/FindCURL.cmake"
   "/usr/local/share/cmake/Modules/FindOpenMP.cmake"
@@ -120,6 +129,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/local/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
   "/usr/local/share/cmake/Modules/FindPackageMessage.cmake"
   "/usr/local/share/cmake/Modules/FindPkgConfig.cmake"
+  "/usr/local/share/cmake/Modules/GNUInstallDirs.cmake"
   "/usr/local/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake"
   "/usr/local/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake"
   "/usr/local/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake"
@@ -141,6 +151,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/local/share/cmake/Modules/Platform/Linker/Apple-AppleClang.cmake"
   "/usr/local/share/cmake/Modules/Platform/UnixPaths.cmake"
   "/usr/local/share/cmake/Modules/SelectLibraryConfigurations.cmake"
+  "/usr/local/share/cmake/Modules/WriteBasicConfigVersionFile.cmake"
   )
 
 # The corresponding makefile is:
@@ -156,7 +167,12 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/3.31.5/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.31.5/CMakeCCompiler.cmake"
   "CMakeFiles/3.31.5/CMakeCXXCompiler.cmake"
+  "_deps/json-subbuild/CMakeLists.txt"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
+  "_deps/json-build/nlohmann_json.pc"
+  "_deps/json-build/nlohmann_jsonConfigVersion.cmake"
+  "_deps/json-build/nlohmann_jsonConfig.cmake"
+  "_deps/json-build/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:

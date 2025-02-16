@@ -47,6 +47,9 @@ public:
         cc->Enable(LEVELEDSHE);
         cc->Enable(MULTIPARTY);
 
+        // Generate the client's key pair – without this, the key will be empty!
+        keyPair = cc->KeyGen();
+
         isInitialized = true;
         std::cout << "Client initialized successfully" << std::endl;
     }
@@ -108,15 +111,15 @@ public:
         }
 
         try {
-            // Serialize client's public key
+            // Serialize client's public key using JSON serialization
             std::stringstream ss;
-            Serial::Serialize(keyPair.publicKey, ss, SerType::JSON); 
+            Serial::Serialize(keyPair.publicKey, ss, SerType::JSON);
             std::string serializedKey = ss.str();
 
             // Debug output
             std::cout << "Serialized key size: " << serializedKey.length() << " bytes" << std::endl;
 
-            // Prepare JSON payload using nlohmann/json
+            // Prepare JSON payload using nlohmann::json
             json payload;
             payload["clientKey"] = serializedKey;
             std::string jsonStr = payload.dump();
@@ -128,8 +131,10 @@ public:
             std::string url = "http://localhost:8080/joinKey";
             struct curl_slist* headers = NULL;
             headers = curl_slist_append(headers, "Content-Type: application/json");
+            // Disable the default Expect header
+            headers = curl_slist_append(headers, "Expect:");
 
-            // Store response and error message
+            // Setup CURL options
             std::string response_string;
             char errbuf[CURL_ERROR_SIZE];
             errbuf[0] = 0;
@@ -140,9 +145,12 @@ public:
             curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf);
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
-            
-            // Add verbose debug output
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+            // Optional: Increase timeouts and enable keepalive
+            curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
+            curl_easy_setopt(curl, CURLOPT_TIMEOUT, 120L);
+            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30L);
 
             CURLcode res = curl_easy_perform(curl);
             curl_slist_free_all(headers);
@@ -158,7 +166,7 @@ public:
 
             // Print server response
             std::cout << "Server response: " << response_string << std::endl;
-            
+
             return true;
         } catch (const std::exception& e) {
             std::cout << "Error sending client key: " << e.what() << std::endl;

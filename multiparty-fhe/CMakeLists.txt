@@ -60,6 +60,17 @@ include_directories(${OpenFHE_INCLUDE}/core)
 include_directories(${OpenFHE_INCLUDE}/pke)
 include_directories(${OpenFHE_INCLUDE}/binfhe)
 
+# Add FetchContent for nlohmann_json
+include(FetchContent)
+FetchContent_Declare(
+    json
+    URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+)
+FetchContent_MakeAvailable(json)
+
+# Add json include directory explicitly
+include_directories(${json_SOURCE_DIR}/include)
+
 # Server executable
 add_executable(fhe_server src/server.cpp)
 target_link_libraries(fhe_server
