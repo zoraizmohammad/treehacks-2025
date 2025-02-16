@@ -8,13 +8,13 @@ import * as d3 from 'd3';
 const DemographicInsights = () => {
   const donutChartRef = useRef<SVGSVGElement>(null);
 
-  // Mock data for regular pie charts
+  // Expanded age data with more detailed breakdown
   const ageData = [
-    { name: '18-24', value: 30 },
-    { name: '25-34', value: 45 },
-    { name: '35-44', value: 15 },
-    { name: '45-54', value: 7 },
-    { name: '55+', value: 3 },
+    { subject: '18-24', A: 30, fulltime: 20, parttime: 10 },
+    { subject: '25-34', A: 45, fulltime: 35, parttime: 10 },
+    { subject: '35-44', A: 15, fulltime: 12, parttime: 3 },
+    { subject: '45-54', A: 7, fulltime: 5, parttime: 2 },
+    { subject: '55+', A: 3, fulltime: 2, parttime: 1 },
   ];
 
   const genderData = [
@@ -30,22 +30,72 @@ const DemographicInsights = () => {
     { name: 'Decline', value: 10 },
   ];
 
+  // Expanded ethnicity data with more detailed information
   const ethnicityData = [
-    { name: 'Asian', value: 25 },
-    { name: 'Black', value: 20 },
-    { name: 'Hispanic', value: 15 },
-    { name: 'White', value: 35 },
-    { name: 'Decline', value: 5 },
+    { 
+      name: 'Asian', 
+      value: 25, 
+      ratio: 25, 
+      subgroups: {
+        eastAsian: 12,
+        southAsian: 8,
+        southeastAsian: 5
+      },
+      growth: 15
+    },
+    { 
+      name: 'Black', 
+      value: 20, 
+      ratio: 20, 
+      subgroups: {
+        african: 10,
+        caribbean: 7,
+        other: 3
+      },
+      growth: 12
+    },
+    { 
+      name: 'Hispanic', 
+      value: 15, 
+      ratio: 15, 
+      subgroups: {
+        central: 6,
+        south: 5,
+        caribbean: 4
+      },
+      growth: 18
+    },
+    { 
+      name: 'White', 
+      value: 35, 
+      ratio: 35, 
+      subgroups: {
+        european: 20,
+        northAmerican: 12,
+        other: 3
+      },
+      growth: 8
+    },
+    { 
+      name: 'Other', 
+      value: 5, 
+      ratio: 5, 
+      subgroups: {
+        mixed: 3,
+        other: 2
+      },
+      growth: 10
+    }
   ];
 
-  // Multi-level donut chart data
+  // Multi-level donut chart data with expanded categories
   const multiLevelData = {
     age: [
-      { name: '18-24', value: 30 },
-      { name: '25-34', value: 45 },
-      { name: '35-44', value: 15 },
-      { name: '45-54', value: 7 },
-      { name: '55+', value: 3 },
+      { name: '18-24', value: 30, detail: 'Recent graduates' },
+      { name: '25-34', value: 45, detail: 'Early career' },
+      { name: '35-44', value: 15, detail: 'Mid career' },
+      { name: '45-54', value: 7, detail: 'Senior level' },
+      { name: '55+', value: 3, detail: 'Pre-retirement' },
     ],
     gender: [
       { name: 'Male', value: 55 },
@@ -54,11 +104,11 @@ const DemographicInsights = () => {
       { name: 'Decline', value: 2 },
     ],
     ethnicity: [
-      { name: 'Asian', value: 25 },
-      { name: 'Black', value: 20 },
-      { name: 'Hispanic', value: 15 },
-      { name: 'White', value: 35 },
-      { name: 'Decline', value: 5 },
+      { name: 'Asian', value: 25, detail: 'Including East, South, and Southeast Asian' },
+      { name: 'Black', value: 20, detail: 'Including African and Caribbean' },
+      { name: 'Hispanic', value: 15, detail: 'Including various Latin American regions' },
+      { name: 'White', value: 35, detail: 'Including European and North American' },
+      { name: 'Decline', value: 5, detail: 'Preferred not to specify' },
     ],
   };
 
@@ -191,13 +241,28 @@ const DemographicInsights = () => {
                     <PolarAngleAxis dataKey="subject" />
                     <PolarRadiusAxis />
                     <Radar
-                      name="Age Groups"
+                      name="Total"
                       dataKey="A"
                       stroke="#8884d8"
                       fill="#8884d8"
                       fillOpacity={0.6}
                     />
+                    <Radar
+                      name="Full-time"
+                      dataKey="fulltime"
+                      stroke="#82ca9d"
+                      fill="#82ca9d"
+                      fillOpacity={0.6}
+                    />
+                    <Radar
+                      name="Part-time"
+                      dataKey="parttime"
+                      stroke="#ffc658"
+                      fill="#ffc658"
+                      fillOpacity={0.6}
+                    />
                     <Legend />
+                    <Tooltip />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
@@ -285,10 +350,44 @@ const DemographicInsights = () => {
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart>
-                    <XAxis dataKey="value" name="Percentage" unit="%" />
-                    <YAxis dataKey="ratio" name="Ratio" />
-                    <ZAxis range={[100, 800]} />
-                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                    <XAxis 
+                      dataKey="value" 
+                      name="Percentage" 
+                      unit="%" 
+                      label={{ value: 'Distribution (%)', position: 'bottom' }}
+                    />
+                    <YAxis 
+                      dataKey="growth" 
+                      name="Growth" 
+                      unit="%" 
+                      label={{ value: 'YoY Growth (%)', angle: -90, position: 'insideLeft' }}
+                    />
+                    <ZAxis 
+                      dataKey="ratio" 
+                      range={[100, 800]} 
+                      name="Representation"
+                    />
+                    <Tooltip 
+                      cursor={{ strokeDasharray: '3 3' }}
+                      content={({ payload, label }) => {
+                        if (payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-white p-2 border border-gray-200 rounded shadow">
+                              <p className="font-bold">{data.name}</p>
+                              <p>Distribution: {data.value}%</p>
+                              <p>Growth: {data.growth}%</p>
+                              <div className="text-sm text-gray-600 mt-1">
+                                {Object.entries(data.subgroups).map(([key, value]) => (
+                                  <p key={key}>{key}: {value}%</p>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
                     <Legend />
                     <Scatter
                       name="Ethnicity Distribution"
