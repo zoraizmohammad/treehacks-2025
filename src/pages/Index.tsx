@@ -38,7 +38,7 @@ const Index = () => {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-teal-500/10 text-teal-300 backdrop-blur-sm relative before:absolute before:inset-0 before:bg-black/30 before:rounded-full before:-z-10">
+            <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-teal-500/10 text-teal-300 backdrop-blur-sm">
               Introducing CipherShield
             </span>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent">
@@ -65,7 +65,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.2 }}
-                className="glass-card p-8 hover:transform hover:scale-105 transition-all duration-300 relative before:absolute before:inset-0 before:bg-black/30 before:rounded-xl before:-z-10"
+                className="glass-card p-8 hover:transform hover:scale-105 transition-all duration-300"
               >
                 <div className="mb-4 p-3 rounded-lg bg-teal-500/10 w-fit">
                   {feature.icon}

@@ -99,10 +99,9 @@ const WorkflowSection = () => {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="flex items-center mb-8 relative workflow-step"
+              className="flex items-center mb-8 relative"
             >
-              <div className={`glass-card p-6 flex-1 flex items-start gap-6 hover:transform hover:scale-102 transition-all duration-300
-                before:absolute before:inset-0 before:bg-black/30 before:rounded-xl before:-z-10`}>
+              <div className={`glass-card p-6 flex-1 flex items-start gap-6 hover:transform hover:scale-102 transition-all duration-300`}>
                 <div className={`p-4 rounded-lg bg-gradient-to-r ${step.color} bg-opacity-10 backdrop-blur-sm`}>
                   {step.icon}
                 </div>
@@ -131,7 +130,7 @@ const WorkflowSection = () => {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="glass-card p-8 inline-block relative before:absolute before:inset-0 before:bg-black/30 before:rounded-xl before:-z-10">
+          <div className="glass-card p-8 inline-block">
             <div className="flex items-center gap-4 justify-center">
               <Shield className="w-8 h-8 text-teal-300" />
               <p className="text-lg text-gray-300">
