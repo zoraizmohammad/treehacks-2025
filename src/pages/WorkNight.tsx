@@ -152,10 +152,19 @@ const WorkNight = () => {
       ethnicity: getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
     };
 
+    // Create concatenated vector in specified order
+    const userRawOutputWork = [
+      ...getSelfIdVector('ageRange', formData.voluntaryDisclosure.ageRange),
+      ...getSelfIdVector('disability', formData.voluntaryDisclosure.disability),
+      ...getSelfIdVector('gender', formData.voluntaryDisclosure.gender),
+      ...getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
+    ];
+
     // Log vectors
     console.log('My Information Vector:', myInformationVector);
     console.log('Original Self Identification Vector:', selfIdentificationVector);
     console.log('Vectorized Self Identification Data:', vectorizedSelfIdData);
+    console.log('Concatenated User Raw Output Work Vector:', userRawOutputWork);
 
     toast({
       title: "Application Submitted!",
