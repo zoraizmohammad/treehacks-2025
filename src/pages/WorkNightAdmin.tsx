@@ -21,6 +21,7 @@ interface LatestCandidate {
 
 const WorkNightAdmin = () => {
   const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
+  const [isCandidateOpen, setIsCandidateOpen] = useState(false);
   const [latestCandidate, setLatestCandidate] = useState<LatestCandidate | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -95,21 +96,29 @@ const WorkNightAdmin = () => {
             <p className="text-gray-600 mt-2">Monitor application and candidate data</p>
           </motion.div>
 
-          {/* Latest Candidate Card */}
+          {/* Latest Candidate Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-6"
+            transition={{ delay: 0.5 }}
+            className="mb-8"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg text-[#0066CC] flex items-center gap-2">
-                  <UserRound className="w-5 h-5" />
-                  Latest Candidate
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+            <Collapsible
+              open={isCandidateOpen}
+              onOpenChange={setIsCandidateOpen}
+              className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm"
+            >
+              <CollapsibleTrigger className="flex items-center gap-3 text-[#0066CC] w-full">
+                <UserRound className="w-5 h-5" />
+                <span className="font-medium">Latest Candidate Information</span>
+                {isCandidateOpen ? (
+                  <ChevronUp className="ml-auto w-5 h-5" />
+                ) : (
+                  <ChevronDown className="ml-auto w-5 h-5" />
+                )}
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent className="mt-6">
                 {isLoading ? (
                   <div className="text-gray-500">Loading latest candidate data...</div>
                 ) : latestCandidate ? (
@@ -137,8 +146,8 @@ const WorkNightAdmin = () => {
                 ) : (
                   <div className="text-gray-500">No candidates found</div>
                 )}
-              </CardContent>
-            </Card>
+              </CollapsibleContent>
+            </Collapsible>
           </motion.div>
 
           {/* Stats Cards */}
@@ -209,7 +218,7 @@ const WorkNightAdmin = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm"
+            className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm mb-8"
           >
             <div className="flex items-center gap-3 text-[#0066CC] mb-6">
               <svg
@@ -250,7 +259,7 @@ const WorkNightAdmin = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.6 }}
             className="mt-8"
           >
             <Collapsible
