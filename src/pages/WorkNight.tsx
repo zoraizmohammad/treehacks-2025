@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
+import { getSelfIdVector } from "@/constants/selfIdentificationVectors";
 
 interface ApplicationFormData {
   personalInfo: {
@@ -31,16 +32,16 @@ interface ApplicationFormData {
 
 const initialFormData: ApplicationFormData = {
   personalInfo: {
-    firstName: "Michael",
-    lastName: "Chen",
-    email: "michael.chen@stanford.edu",
+    firstName: "Mohammad",
+    lastName: "Zoraiz",
+    email: "mohammad.zoraiz@duke.edu",
     phone: "(650) 555-0123",
     address: "123 Palm Drive",
     city: "Palo Alto",
     state: "CA",
     zipCode: "94301",
-    university: "Stanford University",
-    major: "Computer Science",
+    university: "Duke University",
+    major: "Electrical Engineering",
     graduationDate: "2025-05-15",
     resume: null,
   },
@@ -117,6 +118,45 @@ const WorkNight = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Create My Information vector
+    const myInformationVector = {
+      firstName: formData.personalInfo.firstName,
+      lastName: formData.personalInfo.lastName,
+      email: formData.personalInfo.email,
+      phone: formData.personalInfo.phone,
+      address: formData.personalInfo.address,
+      city: formData.personalInfo.city,
+      state: formData.personalInfo.state,
+      zipCode: formData.personalInfo.zipCode,
+      university: formData.personalInfo.university,
+      major: formData.personalInfo.major,
+      graduationDate: formData.personalInfo.graduationDate,
+      hasResume: formData.personalInfo.resume !== null
+    };
+
+    // Create Self Identification vector with original responses
+    const selfIdentificationVector = {
+      ageRange: formData.voluntaryDisclosure.ageRange,
+      disability: formData.voluntaryDisclosure.disability,
+      gender: formData.voluntaryDisclosure.gender,
+      ethnicity: formData.voluntaryDisclosure.ethnicity,
+      veteranStatus: formData.voluntaryDisclosure.veteranStatus
+    };
+
+    // Create vectorized version of self identification responses
+    const vectorizedSelfIdData = {
+      ageRange: getSelfIdVector('ageRange', formData.voluntaryDisclosure.ageRange),
+      disability: getSelfIdVector('disability', formData.voluntaryDisclosure.disability),
+      gender: getSelfIdVector('gender', formData.voluntaryDisclosure.gender),
+      ethnicity: getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
+    };
+
+    // Log vectors
+    console.log('My Information Vector:', myInformationVector);
+    console.log('Original Self Identification Vector:', selfIdentificationVector);
+    console.log('Vectorized Self Identification Data:', vectorizedSelfIdData);
+
     toast({
       title: "Application Submitted!",
       description: "Your application has been received.",
