@@ -109,3 +109,17 @@ target_link_libraries(fhe_client_api
     CURL::libcurl
     nlohmann_json::nlohmann_json
 )
+
+# Client API executable
+add_executable(test src/test.cpp)
+target_link_libraries(test
+    PRIVATE
+    ${OpenFHE_SHARED_LIBRARIES}
+    Boost::system
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    OpenMP::OpenMP_CXX
+    pthread
+    CURL::libcurl
+    nlohmann_json::nlohmann_json
+)

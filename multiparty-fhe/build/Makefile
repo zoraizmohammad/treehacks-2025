@@ -155,6 +155,19 @@ fhe_client_api/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fhe_client_api.dir/build.make CMakeFiles/fhe_client_api.dir/build
 .PHONY : fhe_client_api/fast
 
+#=============================================================================
+# Target rules for targets named test
+
+# Build rule for target.
+test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test
+.PHONY : test
+
+# fast build rule for target.
+test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
+.PHONY : test/fast
+
 src/client.o: src/client.cpp.o
 .PHONY : src/client.o
 
@@ -227,6 +240,30 @@ src/server.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fhe_server.dir/build.make CMakeFiles/fhe_server.dir/src/server.cpp.s
 .PHONY : src/server.cpp.s
 
+src/test.o: src/test.cpp.o
+.PHONY : src/test.o
+
+# target to build an object file
+src/test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/test.cpp.o
+.PHONY : src/test.cpp.o
+
+src/test.i: src/test.cpp.i
+.PHONY : src/test.i
+
+# target to preprocess a source file
+src/test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/test.cpp.i
+.PHONY : src/test.cpp.i
+
+src/test.s: src/test.cpp.s
+.PHONY : src/test.s
+
+# target to generate assembly for a file
+src/test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/test.cpp.s
+.PHONY : src/test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -238,6 +275,7 @@ help:
 	@echo "... fhe_client"
 	@echo "... fhe_client_api"
 	@echo "... fhe_server"
+	@echo "... test"
 	@echo "... src/client.o"
 	@echo "... src/client.i"
 	@echo "... src/client.s"
@@ -247,6 +285,9 @@ help:
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"
+	@echo "... src/test.o"
+	@echo "... src/test.i"
+	@echo "... src/test.s"
 .PHONY : help
 
 

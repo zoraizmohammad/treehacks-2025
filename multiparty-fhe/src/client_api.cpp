@@ -216,11 +216,11 @@ string aggregateEncryptedAttributes() {
 }
 
 // Make a HTTP request to server's /aggregate endpoint
-string requestAggregateAndPartialDecrypt() {
+std::pair<string, string> requestAggregateAndPartialDecrypt() {
     CURL* curl = curl_easy_init();
     if (!curl) {
         cout << "Failed to initialize CURL" << endl;
-        return "";
+        return {"", ""};
     }
 
     string response_string;
@@ -235,16 +235,18 @@ string requestAggregateAndPartialDecrypt() {
 
     if (res != CURLE_OK) {
         cout << "Failed to get aggregated result: " << curl_easy_strerror(res) << endl;
-        return "";
+        return {"", ""};
     }
 
     try {
         // Parse JSON response
         auto j = json::parse(response_string);
-        return j["partiallyDecrypted"].get<string>();
+        string aggregated = j["aggregated_ciphertext"].get<string>();
+        string partial = j["partially_decrypted"].get<string>();
+        return {aggregated, partial};
     } catch (const std::exception& e) {
         cout << "Error processing server response: " << e.what() << endl;
-        return "";
+        return {"", ""};
     }
 }
 
@@ -351,6 +353,25 @@ static string base64_decode(const string& encoded_string) {
     return ret;
 }
 
+// Party 2: Company's final decryption (combining its own partial decryption)
+//------------------------------------------------------------------------------
+Plaintext Party2FinalDecrypt(CryptoContext<DCRTPoly> cc,
+                               const Ciphertext<DCRTPoly>& ciphertext,
+                               const PrivateKey<DCRTPoly> company_sk,
+                               const Ciphertext<DCRTPoly>& partial_from_authority) {
+    std::cout << "[Company] Performing its own partial decryption..." << std::endl;
+    // Compute Company's own decryption share
+    auto partialVec = cc->MultipartyDecryptMain({ ciphertext }, company_sk);
+    
+    std::cout << "[Company] Fusion of partial decryptions (Authority + Company) to complete decryption..." << std::endl;
+    Plaintext final_plaintext;
+    // Fuse the authority's share with Company's share to fully decrypt
+    cc->MultipartyDecryptFusion({ partial_from_authority, partialVec[0] }, &final_plaintext);
+    
+    std::cout << "[Company] Final decryption complete." << std::endl;
+    return final_plaintext;
+}
+
 int main() {
     // Create Crow app instance.
     crow::SimpleApp app;
@@ -386,21 +407,37 @@ int main() {
             // Process and encrypt sensitive fields
             json sensitive_fields = x["sensitive_fields"];
             for (const auto& [key, value] : sensitive_fields.items()) {
+                // Debug: print the key, the type, and the full value of the sensitive field.
+                std::cout << "[DEBUG] Sensitive field key: " << key << std::endl;
+                std::cout << "[DEBUG] Value type: " << value.type_name() << std::endl;
+                std::cout << "[DEBUG] Value contents: " << value.dump() << std::endl;
+
                 if (value.is_array()) {
-                    // Convert array to plaintext
+                    // Convert array to plaintext by first reading it into a vector of ints.
                     vector<int> vec = value.get<vector<int>>();
-                    Plaintext plaintext = vectorToPlaintext(vec, clientInstance.cc);
+
+                    // Debug: print the parsed vector content.
+                    std::cout << "[DEBUG] Parsed vector content: ";
+                    for (const auto& elem : vec) {
+                        std::cout << elem << " ";
+                    }
+                    std::cout << std::endl;
+
+                    // Plaintext plaintext = vectorToPlaintext(vec, clientInstance.cc);
+                    // Plaintext plaintext = clientInstance.cc->MakePackedPlaintext(vec);
+                    std::vector<int64_t> vec64(vec.begin(), vec.end());
+                    Plaintext plaintext = clientInstance.cc->MakePackedPlaintext(vec64);
                     
                     // Encrypt the plaintext
                     auto ciphertext = clientInstance.cc->Encrypt(clientInstance.keyPair.publicKey, plaintext);
                     
-                    // Serialize the ciphertext to binary and base64 encode it
+                    // Serialize the ciphertext to binary and base64 encode it.
                     stringstream ss;
                     Serial::Serialize(ciphertext, ss, SerType::BINARY);
                     string binary_str = ss.str();
                     string base64_str = base64_encode(binary_str);
                     
-                    // Add encrypted value to CSV row
+                    // Add just the base64 encoded string to CSV row.
                     csvRow << base64_str;
                 }
             }
@@ -420,23 +457,32 @@ int main() {
     // Endpoint 3: GET /aggregate
     CROW_ROUTE(app, "/aggregate")
     ([](){
-        // Get aggregated and partially decrypted result from server
-        string partiallyDecrypted = requestAggregateAndPartialDecrypt();
-        if (partiallyDecrypted.empty()) {
+        // Retrieve the authority's partial decryption result.
+        // (This performs an HTTP GET to the authority server's /aggregate endpoint.)
+        auto [aggregated_ciphertext, authorityPartial] = requestAggregateAndPartialDecrypt();
+        if (authorityPartial.empty()) {
             return crow::response(400, "Failed to get aggregated result from server");
         }
-
+        
         try {
-            // Deserialize the partially decrypted ciphertext
-            stringstream ss(partiallyDecrypted);
-            Ciphertext<DCRTPoly> ciphertext;
-            Serial::Deserialize(ciphertext, ss, SerType::JSON);
+            // Deserialize the authority's partial decryption share.
+            stringstream ss(authorityPartial);
+            Ciphertext<DCRTPoly> partial_from_authority;
+            Serial::Deserialize(partial_from_authority, ss, SerType::JSON);
+            
+            // Deserialize the aggregated ciphertext from JSON string
+            stringstream ss2(aggregated_ciphertext);
+            Ciphertext<DCRTPoly> aggregated_object;
+            Serial::Deserialize(aggregated_object, ss2, SerType::JSON);
 
-            // Complete the decryption using client's private key
-            Plaintext result;
-            clientInstance.cc->Decrypt(clientInstance.keyPair.secretKey, ciphertext, &result);
-
-            // Convert the plaintext to a string representation
+            
+            // Instead of a direct decryption, use the final decryption routine.
+            Plaintext result = Party2FinalDecrypt(clientInstance.cc,
+                                                   aggregated_object,
+                                                   clientInstance.keyPair.secretKey,
+                                                   partial_from_authority);
+                                                   
+            // Convert the plaintext to a vector for output.
             vector<int64_t> decryptedVector = result->GetPackedValue();
             json responseJson;
             responseJson["decrypted_result"] = decryptedVector;
