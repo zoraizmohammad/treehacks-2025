@@ -142,6 +142,19 @@ fhe_client/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fhe_client.dir/build.make CMakeFiles/fhe_client.dir/build
 .PHONY : fhe_client/fast
 
+#=============================================================================
+# Target rules for targets named fhe_client_api
+
+# Build rule for target.
+fhe_client_api: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fhe_client_api
+.PHONY : fhe_client_api
+
+# fast build rule for target.
+fhe_client_api/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fhe_client_api.dir/build.make CMakeFiles/fhe_client_api.dir/build
+.PHONY : fhe_client_api/fast
+
 src/client.o: src/client.cpp.o
 .PHONY : src/client.o
 
@@ -165,6 +178,30 @@ src/client.s: src/client.cpp.s
 src/client.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fhe_client.dir/build.make CMakeFiles/fhe_client.dir/src/client.cpp.s
 .PHONY : src/client.cpp.s
+
+src/client_api.o: src/client_api.cpp.o
+.PHONY : src/client_api.o
+
+# target to build an object file
+src/client_api.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fhe_client_api.dir/build.make CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
+.PHONY : src/client_api.cpp.o
+
+src/client_api.i: src/client_api.cpp.i
+.PHONY : src/client_api.i
+
+# target to preprocess a source file
+src/client_api.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fhe_client_api.dir/build.make CMakeFiles/fhe_client_api.dir/src/client_api.cpp.i
+.PHONY : src/client_api.cpp.i
+
+src/client_api.s: src/client_api.cpp.s
+.PHONY : src/client_api.s
+
+# target to generate assembly for a file
+src/client_api.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fhe_client_api.dir/build.make CMakeFiles/fhe_client_api.dir/src/client_api.cpp.s
+.PHONY : src/client_api.cpp.s
 
 src/server.o: src/server.cpp.o
 .PHONY : src/server.o
@@ -199,10 +236,14 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... fhe_client"
+	@echo "... fhe_client_api"
 	@echo "... fhe_server"
 	@echo "... src/client.o"
 	@echo "... src/client.i"
 	@echo "... src/client.s"
+	@echo "... src/client_api.o"
+	@echo "... src/client_api.i"
+	@echo "... src/client_api.s"
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"

@@ -5,8 +5,13 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <fstream>
+#include <vector>
 
 using namespace lbcrypto;
+using namespace std;
+
+const string CSV_FILE = "data.csv";
 
 class FHEServer {
 private:
@@ -65,6 +70,58 @@ public:
     }
 
     bool isReady() const { return isInitialized; }
+
+    Ciphertext<DCRTPoly> aggregateEncryptedAttributes() {
+        ifstream ifs(CSV_FILE);
+        string line;
+        Ciphertext<DCRTPoly> aggregated;
+        bool first = true;
+
+        while(getline(ifs, line)) {
+            vector<string> tokens;
+            stringstream ss(line);
+            string token;
+            while(getline(ss, token, ',')) {
+                tokens.push_back(token);
+            }
+            
+            if (tokens.size() >= 3) {
+                try {
+                    // Deserialize the encrypted attribute from the CSV
+                    stringstream attrStream(tokens[2]);
+                    Ciphertext<DCRTPoly> ciphertext;
+                    Serial::Deserialize(ciphertext, attrStream, SerType::JSON);
+
+                    if (first) {
+                        aggregated = ciphertext;
+                        first = false;
+                    } else {
+                        // Homomorphically add the values
+                        aggregated = cc->EvalAdd(aggregated, ciphertext);
+                    }
+                } catch (const exception& e) {
+                    cout << "Error processing encrypted attribute: " << e.what() << endl;
+                }
+            }
+        }
+        ifs.close();
+        return aggregated;
+    }
+
+    string partiallyDecryptCiphertext(const Ciphertext<DCRTPoly>& ciphertext) {
+        try {
+            // Perform partial decryption using server's private key
+            auto partialDecryption = cc->MultipartyDecryptLead({ciphertext}, keyPair.secretKey);
+
+            // Serialize the partially decrypted result
+            stringstream ss;
+            Serial::Serialize(partialDecryption[0], ss, SerType::JSON);
+            return ss.str();
+        } catch (const exception& e) {
+            cout << "Error during partial decryption: " << e.what() << endl;
+            return "";
+        }
+    }
 };
 
 int main() {
@@ -105,6 +162,29 @@ int main() {
             }
         } catch (const std::exception& e) {
             return crow::response(500, std::string("Server error: ") + e.what());
+        }
+    });
+
+    // Add new aggregate endpoint
+    CROW_ROUTE(app, "/aggregate")
+    ([&server]() {
+        try {
+            // Aggregate all encrypted attributes
+            auto aggregatedCiphertext = server.aggregateEncryptedAttributes();
+            
+            // Partially decrypt the result
+            string partiallyDecrypted = server.partiallyDecryptCiphertext(aggregatedCiphertext);
+            
+            if (partiallyDecrypted.empty()) {
+                return crow::response(500, "Failed to partially decrypt result");
+            }
+
+            // Return the partially decrypted result
+            crow::json::wvalue response;
+            response["partiallyDecrypted"] = partiallyDecrypted;
+            return crow::response(response.dump());
+        } catch (const exception& e) {
+            return crow::response(500, string("Server error: ") + e.what());
         }
     });
 
