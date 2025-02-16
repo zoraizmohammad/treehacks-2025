@@ -1,6 +1,7 @@
 
 import React from "react";
 import ParticleBackground from "@/components/ParticleBackground";
+import WorkflowSection from "@/components/WorkflowSection";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Shield, Database, Network } from "lucide-react";
@@ -38,7 +39,7 @@ const Index = () => {
             className="text-center"
           >
             <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-teal-500/10 text-teal-300 backdrop-blur-sm">
-              Revolutionizing Web3 Equality
+              Introducing CipherShield
             </span>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent">
               Making discrimination mathematically impossible
@@ -80,6 +81,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Workflow Section */}
+      <WorkflowSection />
     </div>
   );
 };
