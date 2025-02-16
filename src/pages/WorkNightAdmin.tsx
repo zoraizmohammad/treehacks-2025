@@ -1,12 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
-import { Users, FileText, Settings, Database, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { Users, FileText, Settings, Database, ChevronDown, ChevronUp, ExternalLink, UserRound } from "lucide-react";
 import Header from "@/components/Header";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+
+interface LatestCandidate {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  city: string;
+  state: string;
+  university: string | null;
+  major: string | null;
+  created_at: string;
+}
 
 const WorkNightAdmin = () => {
   const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
+  const [latestCandidate, setLatestCandidate] = useState<LatestCandidate | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLatestCandidate = async () => {
+      const { data, error } = await supabase
+        .from('job_applications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching latest candidate:', error);
+      } else if (data) {
+        setLatestCandidate(data);
+      }
+      setIsLoading(false);
+    };
+
+    fetchLatestCandidate();
+
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'job_applications'
+        },
+        () => {
+          fetchLatestCandidate();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const recentTransactions = [
     {
@@ -38,6 +93,52 @@ const WorkNightAdmin = () => {
           >
             <h1 className="text-2xl font-bold text-[#0066CC]">Admin Dashboard</h1>
             <p className="text-gray-600 mt-2">Monitor application and candidate data</p>
+          </motion.div>
+
+          {/* Latest Candidate Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-6"
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg text-[#0066CC] flex items-center gap-2">
+                  <UserRound className="w-5 h-5" />
+                  Latest Candidate
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="text-gray-500">Loading latest candidate data...</div>
+                ) : latestCandidate ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h3 className="font-medium text-[#0066CC] mb-2">Contact Information</h3>
+                        <div className="space-y-2">
+                          <p><span className="font-medium">Name:</span> {latestCandidate.first_name} {latestCandidate.last_name}</p>
+                          <p><span className="font-medium">Email:</span> {latestCandidate.email}</p>
+                          <p><span className="font-medium">Phone:</span> {latestCandidate.phone}</p>
+                          <p><span className="font-medium">Location:</span> {latestCandidate.city}, {latestCandidate.state}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-[#0066CC] mb-2">Academic Information</h3>
+                        <div className="space-y-2">
+                          <p><span className="font-medium">University:</span> {latestCandidate.university || 'Not provided'}</p>
+                          <p><span className="font-medium">Major:</span> {latestCandidate.major || 'Not provided'}</p>
+                          <p><span className="font-medium">Applied:</span> {new Date(latestCandidate.created_at).toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-500">No candidates found</div>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Stats Cards */}
