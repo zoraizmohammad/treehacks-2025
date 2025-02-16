@@ -8,7 +8,6 @@
 #include <vector>
 #include <mutex>
 #include <exception>
-#include <fstream>      // for file I/O
 
 using namespace lbcrypto;
 using namespace std;
@@ -92,28 +91,6 @@ Plaintext Party2FinalDecrypt(const Ciphertext<DCRTPoly>& ciphertext,
     return finalPlaintext;
 }
 
-// Add base64_encode function before main()
-string base64_encode(const string &in) {
-    string out;
-    static const string base64_chars = 
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    
-    int val = 0, valb = -6;
-    for (unsigned char c : in) {
-        val = (val << 8) + c;
-        valb += 8;
-        while (valb >= 0) {
-            out.push_back(base64_chars[(val >> valb) & 0x3F]);
-            valb -= 6;
-        }
-    }
-    if (valb > -6) 
-        out.push_back(base64_chars[((val << 8) >> (valb + 8)) & 0x3F]);
-    while (out.size() % 4) 
-        out.push_back('=');
-    return out;
-}
-
 //---------------------------------------------------------------------
 // Main server endpoints using Crow
 //---------------------------------------------------------------------
@@ -133,19 +110,11 @@ int main() {
     ([](const crow::request& req) {
         try {
             auto j = json::parse(req.body);
-            
-            // Extract non-sensitive fields
-            if (!j.contains("fields")) {
-                return crow::response(400, "Missing 'fields' in JSON payload.");
+            // For debugging, print the non-sensitive fields if provided.
+            if(j.contains("fields")) {
+                cout << "[/data] Received non-sensitive fields: " << j["fields"].dump() << endl;
             }
-            auto fields = j["fields"];
-            if (!fields.contains("id") || !fields.contains("name")) {
-                return crow::response(400, "Missing 'id' or 'name' in fields.");
-            }
-            int id = fields["id"];
-            string name = fields["name"];
-
-            // Process sensitive fields
+            // Process sensitive fields.
             if (!j.contains("sensitive_fields")) {
                 return crow::response(400, "Missing 'sensitive_fields' in JSON payload.");
             }
@@ -153,34 +122,23 @@ int main() {
             if (!sens.contains("ratings")) {
                 return crow::response(400, "Missing 'ratings' in sensitive_fields.");
             }
-            
+            // Extract the ratings array.
             vector<int64_t> ratings = sens["ratings"].get<vector<int64_t>>();
-            cout << "[/data] Received ratings: ";
+            cout << "[/data] Sensitive data (ratings): ";
             for (auto r : ratings) cout << r << " ";
             cout << endl;
             
+            // Create plaintext from ratings.
             Plaintext pt = cc->MakePackedPlaintext(ratings);
             cout << "[/data] Created plaintext: " << *pt << endl;
             
+            // Encrypt using the joint public key.
             Ciphertext<DCRTPoly> ct = cc->Encrypt(jointPublicKey, pt);
-
-            // Serialize and save to CSV
-            stringstream ss;
-            Serial::Serialize(ct, ss, SerType::BINARY);
-            string binary_str = ss.str();
-            string base64_str = base64_encode(binary_str);
-
-            ofstream csvFile("data2.csv", ios::app);
-            if (!csvFile.is_open()) {
-                return crow::response(500, "Unable to open CSV file for writing.");
+            {
+                lock_guard<mutex> lock(g_mtx);
+                g_ciphertexts.push_back(ct);
             }
-            csvFile << id << "," << name << "," << base64_str << "\n";
-            csvFile.close();
-
-            cout << "[/data] Saved record to data2.csv: id=" << id 
-                 << ", name=" << name << ", ciphertext=" << base64_str << endl;
-
-            return crow::response(200, "Data ingested and saved to CSV.");
+            return crow::response(200, "Data ingested and encrypted.");
         } catch (std::exception &e) {
             return crow::response(500, e.what());
         }
