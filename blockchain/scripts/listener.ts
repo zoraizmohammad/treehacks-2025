@@ -10,15 +10,14 @@ dotenv.config();
 const CONTRACT_ABI = [
     "event ValidationRequired(uint256 indexed requestId)",
     "event AggregationRequested(uint256 indexed requestId, address indexed requester, string aggregationType, uint256 dataCount, string dataSourceUrl, string companyId)",
-    "event AggregationProcessed(uint256 indexed requestId)",
-    "function getAggregationRequest(uint256 requestId) view returns (address requester, string aggregationType, uint256 timestamp, bool isProcessed, uint256 dataCount, string dataSourceUrl, string companyId, bool isValidated)",
+    "event AggregationProcessed(uint256 indexed requestId, uint256 result)",
+    "function getAggregationRequest(uint256 requestId) view returns (address requester, string aggregationType, uint256 timestamp, bool isProcessed, uint256 dataCount, string dataSourceUrl, string companyId, bool isValidated, uint256 result)",
     "function validateAndApproveRequest(uint256 requestId, uint256 confirmedCount)",
-    "function markRequestProcessed(uint256 requestId)"
+    "function markRequestProcessed(uint256 requestId, uint256 result)"
 ];
 
 class BlockchainListener {
     private contract: Contract;
-    private readonly BATCH_SIZE = 100; // Process 100 records at a time
 
     constructor() {
         console.log("Initializing BlockchainListener...");
@@ -35,33 +34,23 @@ class BlockchainListener {
     }
 
     async fetchCompanyData(dataSourceUrl: string, totalRecords: number): Promise<string[]> {
-        const pageSize = 100;
-        const totalPages = Math.ceil(totalRecords / pageSize);
-        let allData: string[] = [];
+        console.log(`Fetching ${totalRecords} records...`);
+        const response = await axios.get(`${dataSourceUrl}?page=1&pageSize=${totalRecords}`);
 
-        console.log(`Fetching ${totalRecords} records in ${totalPages} pages...`);
-
-        for (let page = 1; page <= totalPages; page++) {
-            console.log(`Fetching page ${page}/${totalPages}...`);
-            const response = await axios.get(`${dataSourceUrl}?page=${page}&pageSize=${pageSize}`);
-
-            if (response.data.success) {
-                allData = allData.concat(response.data.data);
-            } else {
-                throw new Error(`Failed to fetch page ${page}: ${response.data.error}`);
-            }
+        if (response.data.success) {
+            return response.data.data;
+        } else {
+            throw new Error(`Failed to fetch data: ${response.data.error}`);
         }
-
-        return allData;
     }
 
-    async processBatch(
+    async processData(
         requestId: string,
         aggregationType: string,
         encryptedData: string[]
     ): Promise<number> {
         const response = await axios.post(
-            `${process.env.AGGREGATOR_API_URL}/batch` || "http://localhost:3000/api/aggregate/batch",
+            process.env.AGGREGATOR_API_URL || "http://localhost:3000/api/aggregate",
             {
                 requestId,
                 aggregationType,
@@ -70,59 +59,17 @@ class BlockchainListener {
         );
 
         if (!response.data.success) {
-            throw new Error(`Batch processing failed: ${response.data.error}`);
+            throw new Error(`Processing failed: ${response.data.error}`);
         }
 
         return response.data.result;
-    }
-
-    async processLargeDataset(
-        requestId: string,
-        aggregationType: string,
-        encryptedData: string[]
-    ): Promise<number> {
-        const batches: string[][] = [];
-
-        // Split data into batches
-        for (let i = 0; i < encryptedData.length; i += this.BATCH_SIZE) {
-            batches.push(encryptedData.slice(i, i + this.BATCH_SIZE));
-        }
-
-        console.log(`Processing ${batches.length} batches...`);
-
-        // Process each batch and collect results
-        const results: number[] = [];
-        for (let i = 0; i < batches.length; i++) {
-            console.log(`Processing batch ${i + 1}/${batches.length}...`);
-            const result = await this.processBatch(requestId, aggregationType, batches[i]);
-            results.push(result);
-        }
-
-        // Combine results based on aggregation type
-        switch (aggregationType.toLowerCase()) {
-            case 'sum':
-                return results.reduce((a, b) => a + b, 0);
-            case 'average':
-                const sum = results.reduce((a, b) => a + b, 0);
-                return sum / encryptedData.length;
-            case 'median':
-                // For median, we need all the data, so use the original endpoint
-                const response = await axios.post(process.env.AGGREGATOR_API_URL || "http://localhost:3000/api/aggregate", {
-                    requestId,
-                    aggregationType,
-                    encryptedData
-                });
-                return response.data.result;
-            default:
-                throw new Error(`Unsupported aggregation type: ${aggregationType}`);
-        }
     }
 
     async validateRequest(requestId: bigint) {
         console.log(`\nValidating request ${requestId}...`);
 
         // Get request details
-        const [requester, aggregationType, timestamp, isProcessed, dataCount, dataSourceUrl, companyId, isValidated] =
+        const [requester, aggregationType, timestamp, isProcessed, dataCount, dataSourceUrl, companyId, isValidated, result] =
             await this.contract.getAggregationRequest(requestId);
 
         // Get actual record count from company API
@@ -161,7 +108,7 @@ class BlockchainListener {
             console.log(`Retrieved ${encryptedData.length} encrypted records`);
 
             console.log("Processing data...");
-            const result = await this.processLargeDataset(
+            const result = await this.processData(
                 requestId.toString(),
                 aggregationType,
                 encryptedData
@@ -169,10 +116,10 @@ class BlockchainListener {
 
             console.log(`Final result: ${result}`);
 
-            console.log("Marking request as processed...");
-            const tx = await this.contract.markRequestProcessed(requestId);
+            console.log("Marking request as processed and storing result on-chain...");
+            const tx = await this.contract.markRequestProcessed(requestId, result);
             await tx.wait();
-            console.log(`Request ${requestId} processed successfully`);
+            console.log(`Request ${requestId} processed successfully with result ${result}`);
         } catch (error: any) {
             console.error(`Error processing request ${requestId}:`, error.message);
             if (error.response) {
@@ -211,8 +158,8 @@ class BlockchainListener {
         });
 
         // Listen for AggregationProcessed events
-        this.contract.on("AggregationProcessed", (requestId: bigint) => {
-            console.log(`Request ${requestId} marked as processed`);
+        this.contract.on("AggregationProcessed", (requestId: bigint, result: bigint) => {
+            console.log(`Request ${requestId} marked as processed with result ${result}`);
         });
 
         console.log("Listening for events...");

@@ -22,6 +22,7 @@ contract PrivateDataAggregator is Ownable, Pausable {
         string dataSourceUrl;
         string companyId;
         bool isValidated;
+        uint256 result;  // Added to store the aggregation result
     }
     
     // Mapping to store aggregation requests
@@ -37,7 +38,7 @@ contract PrivateDataAggregator is Ownable, Pausable {
         string dataSourceUrl,
         string companyId
     );
-    event AggregationProcessed(uint256 indexed requestId);
+    event AggregationProcessed(uint256 indexed requestId, uint256 result);
     event ValidationRequired(uint256 indexed requestId);
     
     constructor() Ownable() {}
@@ -70,7 +71,8 @@ contract PrivateDataAggregator is Ownable, Pausable {
             dataCount: dataCount,
             dataSourceUrl: dataSourceUrl,
             companyId: companyId,
-            isValidated: false
+            isValidated: false,
+            result: 0  // Initialize result to 0
         });
 
         // Emit validation required event
@@ -90,6 +92,7 @@ contract PrivateDataAggregator is Ownable, Pausable {
      * @return dataSourceUrl URL to the data source
      * @return companyId ID of the company
      * @return isValidated Whether the request has been validated
+     * @return result The aggregation result (0 if not processed)
      */
     function getAggregationRequest(uint256 requestId)
         public
@@ -102,7 +105,8 @@ contract PrivateDataAggregator is Ownable, Pausable {
             uint256 dataCount,
             string memory dataSourceUrl,
             string memory companyId,
-            bool isValidated
+            bool isValidated,
+            uint256 result
         )
     {
         AggregationRequest storage request = aggregationRequests[requestId];
@@ -114,20 +118,23 @@ contract PrivateDataAggregator is Ownable, Pausable {
             request.dataCount,
             request.dataSourceUrl,
             request.companyId,
-            request.isValidated
+            request.isValidated,
+            request.result
         );
     }
     
     /**
-     * @dev Mark an aggregation request as processed
+     * @dev Mark an aggregation request as processed and store the result
      * @param requestId The ID of the aggregation request to mark as processed
+     * @param result The final aggregation result to store
      */
-    function markRequestProcessed(uint256 requestId) public {
+    function markRequestProcessed(uint256 requestId, uint256 result) public {
         require(!aggregationRequests[requestId].isProcessed, "Request already processed");
         require(aggregationRequests[requestId].isValidated, "Request not validated");
         
         aggregationRequests[requestId].isProcessed = true;
-        emit AggregationProcessed(requestId);
+        aggregationRequests[requestId].result = result;
+        emit AggregationProcessed(requestId, result);
     }
     
     /**

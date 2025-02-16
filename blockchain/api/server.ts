@@ -3,8 +3,8 @@ import { utils } from 'ethers';
 import cors from 'cors';
 
 const app = express();
-// Increase JSON payload limit to 50MB
-app.use(express.json({ limit: '50mb' }));
+// Increase JSON payload limit to 100MB to handle all records at once
+app.use(express.json({ limit: '100mb' }));
 app.use(cors());
 
 // Simulated aggregation function
@@ -16,53 +16,34 @@ function aggregateData(encryptedData: string[], type: string): number {
         return JSON.parse(jsonString).value;
     });
 
+    let result: number;
     switch (type.toLowerCase()) {
         case 'sum':
-            return decryptedData.reduce((a, b) => a + b, 0);
+            result = decryptedData.reduce((a, b) => a + b, 0);
+            break;
         case 'average':
-            return decryptedData.reduce((a, b) => a + b, 0) / decryptedData.length;
+            result = decryptedData.reduce((a, b) => a + b, 0) / decryptedData.length;
+            break;
         case 'count':
-            return decryptedData.length;
+            result = decryptedData.length;
+            break;
         case 'median': {
             const sorted = [...decryptedData].sort((a, b) => a - b);
             const mid = Math.floor(sorted.length / 2);
-            return sorted.length % 2 === 0
+            result = sorted.length % 2 === 0
                 ? (sorted[mid - 1] + sorted[mid]) / 2
                 : sorted[mid];
+            break;
         }
         default:
             throw new Error(`Unsupported aggregation type: ${type}`);
     }
+
+    // Round to nearest integer
+    return Math.round(result);
 }
 
-// Batch processing endpoint
-app.post('/api/aggregate/batch', (req, res) => {
-    try {
-        const { requestId, aggregationType, encryptedData } = req.body;
-        console.log(`Processing batch for request ${requestId}`);
-        console.log(`Aggregation type: ${aggregationType}`);
-        console.log(`Number of records in batch: ${encryptedData.length}`);
-
-        // Process this batch
-        const result = aggregateData(encryptedData, aggregationType);
-        console.log(`Batch aggregation result: ${result}`);
-
-        res.json({
-            success: true,
-            requestId,
-            result,
-            recordCount: encryptedData.length
-        });
-    } catch (error: any) {
-        console.error('Error processing batch:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
-});
-
-// Original endpoint (now with increased payload limit)
+// Main aggregation endpoint
 app.post('/api/aggregate', (req, res) => {
     try {
         const { requestId, aggregationType, encryptedData } = req.body;
@@ -72,7 +53,7 @@ app.post('/api/aggregate', (req, res) => {
 
         // Perform aggregation
         const result = aggregateData(encryptedData, aggregationType);
-        console.log(`Aggregation result: ${result}`);
+        console.log(`Aggregation result (rounded): ${result}`);
 
         res.json({
             success: true,
