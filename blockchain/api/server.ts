@@ -16,23 +16,31 @@ function aggregateData(encryptedData: string[], type: string): number {
         return JSON.parse(jsonString).value;
     });
 
+    let result: number;
     switch (type.toLowerCase()) {
         case 'sum':
-            return decryptedData.reduce((a, b) => a + b, 0);
+            result = decryptedData.reduce((a, b) => a + b, 0);
+            break;
         case 'average':
-            return decryptedData.reduce((a, b) => a + b, 0) / decryptedData.length;
+            result = decryptedData.reduce((a, b) => a + b, 0) / decryptedData.length;
+            break;
         case 'count':
-            return decryptedData.length;
+            result = decryptedData.length;
+            break;
         case 'median': {
             const sorted = [...decryptedData].sort((a, b) => a - b);
             const mid = Math.floor(sorted.length / 2);
-            return sorted.length % 2 === 0
+            result = sorted.length % 2 === 0
                 ? (sorted[mid - 1] + sorted[mid]) / 2
                 : sorted[mid];
+            break;
         }
         default:
             throw new Error(`Unsupported aggregation type: ${type}`);
     }
+
+    // Round to nearest integer
+    return Math.round(result);
 }
 
 // Main aggregation endpoint
@@ -45,7 +53,7 @@ app.post('/api/aggregate', (req, res) => {
 
         // Perform aggregation
         const result = aggregateData(encryptedData, aggregationType);
-        console.log(`Aggregation result: ${result}`);
+        console.log(`Aggregation result (rounded): ${result}`);
 
         res.json({
             success: true,

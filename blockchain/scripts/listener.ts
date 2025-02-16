@@ -10,10 +10,10 @@ dotenv.config();
 const CONTRACT_ABI = [
     "event ValidationRequired(uint256 indexed requestId)",
     "event AggregationRequested(uint256 indexed requestId, address indexed requester, string aggregationType, uint256 dataCount, string dataSourceUrl, string companyId)",
-    "event AggregationProcessed(uint256 indexed requestId)",
-    "function getAggregationRequest(uint256 requestId) view returns (address requester, string aggregationType, uint256 timestamp, bool isProcessed, uint256 dataCount, string dataSourceUrl, string companyId, bool isValidated)",
+    "event AggregationProcessed(uint256 indexed requestId, uint256 result)",
+    "function getAggregationRequest(uint256 requestId) view returns (address requester, string aggregationType, uint256 timestamp, bool isProcessed, uint256 dataCount, string dataSourceUrl, string companyId, bool isValidated, uint256 result)",
     "function validateAndApproveRequest(uint256 requestId, uint256 confirmedCount)",
-    "function markRequestProcessed(uint256 requestId)"
+    "function markRequestProcessed(uint256 requestId, uint256 result)"
 ];
 
 class BlockchainListener {
@@ -69,7 +69,7 @@ class BlockchainListener {
         console.log(`\nValidating request ${requestId}...`);
 
         // Get request details
-        const [requester, aggregationType, timestamp, isProcessed, dataCount, dataSourceUrl, companyId, isValidated] =
+        const [requester, aggregationType, timestamp, isProcessed, dataCount, dataSourceUrl, companyId, isValidated, result] =
             await this.contract.getAggregationRequest(requestId);
 
         // Get actual record count from company API
@@ -116,10 +116,10 @@ class BlockchainListener {
 
             console.log(`Final result: ${result}`);
 
-            console.log("Marking request as processed...");
-            const tx = await this.contract.markRequestProcessed(requestId);
+            console.log("Marking request as processed and storing result on-chain...");
+            const tx = await this.contract.markRequestProcessed(requestId, result);
             await tx.wait();
-            console.log(`Request ${requestId} processed successfully`);
+            console.log(`Request ${requestId} processed successfully with result ${result}`);
         } catch (error: any) {
             console.error(`Error processing request ${requestId}:`, error.message);
             if (error.response) {
@@ -158,8 +158,8 @@ class BlockchainListener {
         });
 
         // Listen for AggregationProcessed events
-        this.contract.on("AggregationProcessed", (requestId: bigint) => {
-            console.log(`Request ${requestId} marked as processed`);
+        this.contract.on("AggregationProcessed", (requestId: bigint, result: bigint) => {
+            console.log(`Request ${requestId} marked as processed with result ${result}`);
         });
 
         console.log("Listening for events...");
