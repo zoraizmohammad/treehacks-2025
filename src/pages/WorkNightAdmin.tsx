@@ -96,60 +96,6 @@ const WorkNightAdmin = () => {
             <p className="text-gray-600 mt-2">Monitor application and candidate data</p>
           </motion.div>
 
-          {/* Latest Candidate Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mb-8"
-          >
-            <Collapsible
-              open={isCandidateOpen}
-              onOpenChange={setIsCandidateOpen}
-              className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm"
-            >
-              <CollapsibleTrigger className="flex items-center gap-3 text-[#0066CC] w-full">
-                <UserRound className="w-5 h-5" />
-                <span className="font-medium">Latest Candidate Information</span>
-                {isCandidateOpen ? (
-                  <ChevronUp className="ml-auto w-5 h-5" />
-                ) : (
-                  <ChevronDown className="ml-auto w-5 h-5" />
-                )}
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent className="mt-6">
-                {isLoading ? (
-                  <div className="text-gray-500">Loading latest candidate data...</div>
-                ) : latestCandidate ? (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h3 className="font-medium text-[#0066CC] mb-2">Contact Information</h3>
-                        <div className="space-y-2">
-                          <p><span className="font-medium">Name:</span> {latestCandidate.first_name} {latestCandidate.last_name}</p>
-                          <p><span className="font-medium">Email:</span> {latestCandidate.email}</p>
-                          <p><span className="font-medium">Phone:</span> {latestCandidate.phone}</p>
-                          <p><span className="font-medium">Location:</span> {latestCandidate.city}, {latestCandidate.state}</p>
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-[#0066CC] mb-2">Academic Information</h3>
-                        <div className="space-y-2">
-                          <p><span className="font-medium">University:</span> {latestCandidate.university || 'Not provided'}</p>
-                          <p><span className="font-medium">Major:</span> {latestCandidate.major || 'Not provided'}</p>
-                          <p><span className="font-medium">Applied:</span> {new Date(latestCandidate.created_at).toLocaleString()}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-gray-500">No candidates found</div>
-                )}
-              </CollapsibleContent>
-            </Collapsible>
-          </motion.div>
-
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <motion.div
@@ -278,6 +224,45 @@ const WorkNightAdmin = () => {
               </CollapsibleTrigger>
               
               <CollapsibleContent className="mt-6 space-y-6">
+                {/* Latest Candidate Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg text-[#0066CC] flex items-center gap-2">
+                      <UserRound className="w-5 h-5" />
+                      Latest Candidate Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <div className="text-gray-500">Loading latest candidate data...</div>
+                    ) : latestCandidate ? (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h3 className="font-medium text-[#0066CC] mb-2">Contact Information</h3>
+                            <div className="space-y-2">
+                              <p><span className="font-medium">Name:</span> {latestCandidate.first_name} {latestCandidate.last_name}</p>
+                              <p><span className="font-medium">Email:</span> {latestCandidate.email}</p>
+                              <p><span className="font-medium">Phone:</span> {latestCandidate.phone}</p>
+                              <p><span className="font-medium">Location:</span> {latestCandidate.city}, {latestCandidate.state}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-[#0066CC] mb-2">Academic Information</h3>
+                            <div className="space-y-2">
+                              <p><span className="font-medium">University:</span> {latestCandidate.university || 'Not provided'}</p>
+                              <p><span className="font-medium">Major:</span> {latestCandidate.major || 'Not provided'}</p>
+                              <p><span className="font-medium">Applied:</span> {new Date(latestCandidate.created_at).toLocaleString()}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-gray-500">No candidates found</div>
+                    )}
+                  </CardContent>
+                </Card>
+
                 {/* Recent Holesky Transactions */}
                 <Card>
                   <CardHeader>
