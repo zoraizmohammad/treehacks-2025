@@ -132,31 +132,50 @@ class BlockchainListener {
         companyId: string
     ) {
         try {
+            console.log(`\nChecking state for request ${requestId}...`);
+
             // First check if request is valid and not already processed
-            const [req_requester, req_type, req_timestamp, isProcessed, req_count, req_url, req_companyId, isValidated] =
-                await this.contract.getAggregationRequest(requestId);
+            let requestState;
+            try {
+                const [req_requester, req_type, req_timestamp, isProcessed, req_count, req_url, req_companyId, isValidated] =
+                    await this.contract.getAggregationRequest(requestId);
 
-            console.log("Request state:", {
-                requestId: requestId.toString(),
-                requester: req_requester,
-                aggregationType: req_type,
-                timestamp: new Date(Number(req_timestamp) * 1000).toISOString(),
-                isProcessed,
-                dataCount: req_count.toString(),
-                dataSourceUrl: req_url,
-                companyId: req_companyId,
-                isValidated
-            });
+                requestState = {
+                    requestId: requestId.toString(),
+                    requester: req_requester,
+                    aggregationType: req_type,
+                    timestamp: new Date(Number(req_timestamp) * 1000).toISOString(),
+                    isProcessed,
+                    dataCount: req_count.toString(),
+                    dataSourceUrl: req_url,
+                    companyId: req_companyId,
+                    isValidated
+                };
 
-            if (isProcessed) {
-                console.log(`Request ${requestId} has already been processed`);
-                return;
+                console.log("Request state:", requestState);
+
+                if (isProcessed) {
+                    console.log(`Request ${requestId} has already been processed`);
+                    return;
+                }
+
+                if (!isValidated) {
+                    console.log(`Request ${requestId} has not been validated yet`);
+                    return;
+                }
+            } catch (stateError: any) {
+                console.error("Error checking request state:", stateError.message);
+                if (stateError.error) {
+                    console.error("Provider error:", {
+                        name: stateError.error.name,
+                        code: stateError.error.code,
+                        message: stateError.error.message
+                    });
+                }
+                throw stateError;
             }
 
-            if (!isValidated) {
-                console.log(`Request ${requestId} has not been validated yet`);
-                return;
-            }
+            console.log("Request state is valid, proceeding with processing...");
 
             console.log("Fetching data from company API...");
             const encryptedData = await this.fetchCompanyData(dataSourceUrl, Number(dataCount));
