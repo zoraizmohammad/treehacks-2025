@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -373,7 +374,7 @@ const WorkNight = () => {
                     <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-orange-500">🔒</span>
-                        <h3 className="font-medium text-gray-900">End-to-End Encryption</h3>
+                        <h3 className="font-medium text-gray-900">Homomorphically Encrypted Data</h3>
                       </div>
                       <p className="text-sm text-gray-600">
                         All data is encrypted right in your browser using advanced homomorphic encryption, so no one—not even us—can see your individual responses.
