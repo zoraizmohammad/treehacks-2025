@@ -3,7 +3,8 @@ import { utils } from 'ethers';
 import cors from 'cors';
 
 const app = express();
-app.use(express.json());
+// Increase JSON payload limit to 50MB
+app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 
 // Simulated aggregation function
@@ -34,6 +35,34 @@ function aggregateData(encryptedData: string[], type: string): number {
     }
 }
 
+// Batch processing endpoint
+app.post('/api/aggregate/batch', (req, res) => {
+    try {
+        const { requestId, aggregationType, encryptedData } = req.body;
+        console.log(`Processing batch for request ${requestId}`);
+        console.log(`Aggregation type: ${aggregationType}`);
+        console.log(`Number of records in batch: ${encryptedData.length}`);
+
+        // Process this batch
+        const result = aggregateData(encryptedData, aggregationType);
+        console.log(`Batch aggregation result: ${result}`);
+
+        res.json({
+            success: true,
+            requestId,
+            result,
+            recordCount: encryptedData.length
+        });
+    } catch (error: any) {
+        console.error('Error processing batch:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Original endpoint (now with increased payload limit)
 app.post('/api/aggregate', (req, res) => {
     try {
         const { requestId, aggregationType, encryptedData } = req.body;
@@ -43,7 +72,6 @@ app.post('/api/aggregate', (req, res) => {
 
         // Perform aggregation
         const result = aggregateData(encryptedData, aggregationType);
-
         console.log(`Aggregation result: ${result}`);
 
         res.json({
