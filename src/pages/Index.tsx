@@ -43,6 +43,7 @@ const initialFormData: HealthFormData = {
 
 const Index = () => {
   const [formData, setFormData] = useState<HealthFormData>(initialFormData);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,7 +55,32 @@ const Index = () => {
       title: "Response Submitted Securely!",
       description: "Your data has been encrypted and sent.",
     });
+    
+    setIsSubmitted(true);
   };
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-[#1A1F2C]">
+        <Header />
+        <div className="max-w-4xl mx-auto p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <h1 className="text-5xl font-bold rainbow-text mb-8">Application Submitted!</h1>
+            <div className="glass-card p-8 relative overflow-hidden">
+              <div className="encryption-visualizer" />
+              <p className="text-white text-lg">
+                Thank you for your application. Your information is secure and protected through Dual Key homomorphic encryption.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#1A1F2C]">
