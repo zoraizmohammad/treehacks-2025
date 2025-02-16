@@ -33,7 +33,7 @@ const Index = () => {
       <ParticleBackground />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 px-6">
+      <section className="relative pt-20 pb-24 px-6">
         <div className="container mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -41,18 +41,23 @@ const Index = () => {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-teal-500/10 text-teal-300 backdrop-blur-sm">
-              Introducing CipherShield
-            </span>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent">
-              Making discrimination mathematically impossible
+            <h1 className="text-6xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-[#4A90E2] to-[#5B9BE6] bg-clip-text text-transparent">
+              CipherShield
             </h1>
+            <motion.img
+              src="/lovable-uploads/11ce03c2-ef22-4dc0-b671-3a32a371f99d.png"
+              alt="CipherShield Logo"
+              className="w-32 h-32 mx-auto mb-10"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            />
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
-              Our innovative Web3 protocol ensures complete fairness through mathematical principles,
-              creating a truly equitable digital ecosystem.
+              Making discrimination mathematically impossible through our innovative Web3 protocol,
+              ensuring complete fairness through mathematical principles.
             </p>
             <Button 
-              className="bg-teal-500 hover:bg-teal-600 text-white rounded-full px-8 py-6 text-lg transition-all duration-300 transform hover:scale-105"
+              className="bg-[#4A90E2] hover:bg-[#357ABD] text-white rounded-full px-8 py-6 text-lg transition-all duration-300 transform hover:scale-105"
               onClick={() => navigate('/company-signup')}
             >
               Companies Sign up Here <ArrowRight className="ml-2 h-5 w-5" />
@@ -73,7 +78,7 @@ const Index = () => {
                 transition={{ duration: 0.5, delay: index * 0.2 }}
                 className="glass-card p-8 hover:transform hover:scale-105 transition-all duration-300"
               >
-                <div className="mb-4 p-3 rounded-lg bg-teal-500/10 w-fit">
+                <div className="mb-4 p-3 rounded-lg bg-[#4A90E2]/10 w-fit">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-white">
