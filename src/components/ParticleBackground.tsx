@@ -33,7 +33,7 @@ const ParticleBackground = () => {
     }
 
     const animate = () => {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.fillStyle = "rgba(26, 31, 44, 0.05)";  // Changed to a dark blue-black color
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle) => {
@@ -67,7 +67,7 @@ const ParticleBackground = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 -z-10"
-      style={{ background: "linear-gradient(to right, #0f172a, #164e63)" }}
+      style={{ background: "linear-gradient(to right, #1A1F2C, #222B3C)" }}  // Changed to dark gradient
     />
   );
 };
