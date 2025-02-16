@@ -132,6 +132,19 @@ class BlockchainListener {
         companyId: string
     ) {
         try {
+            // First check if request is valid and not already processed
+            const [, , , isProcessed, , , , isValidated] = await this.contract.getAggregationRequest(requestId);
+
+            if (isProcessed) {
+                console.log(`Request ${requestId} has already been processed`);
+                return;
+            }
+
+            if (!isValidated) {
+                console.log(`Request ${requestId} has not been validated yet`);
+                return;
+            }
+
             console.log("Fetching data from company API...");
             const encryptedData = await this.fetchCompanyData(dataSourceUrl, Number(dataCount));
             console.log(`Retrieved ${encryptedData.length} encrypted records`);
@@ -146,14 +159,53 @@ class BlockchainListener {
             console.log(`Final result: ${result}`);
 
             console.log("Marking request as processed and storing result on-chain...");
-            const tx = await this.contract.markRequestProcessed(requestId, result);
+            const tx = await this.contract.markRequestProcessed(
+                requestId,
+                result,
+                {
+                    gasLimit: 1000000,
+                    maxFeePerGas: ethers.utils.parseUnits("100", "gwei"),
+                    maxPriorityFeePerGas: ethers.utils.parseUnits("2", "gwei")
+                }
+            );
             await tx.wait();
             console.log(`Request ${requestId} processed successfully with result ${result}`);
         } catch (error: any) {
             console.error(`Error processing request ${requestId}:`, error.message);
+
+            // Log detailed transaction information
+            if (error.transaction) {
+                console.error("Transaction details:", {
+                    from: error.transaction.from,
+                    to: error.transaction.to,
+                    data: error.transaction.data,
+                });
+            }
+
+            // Log provider error details
+            if (error.error) {
+                console.error("Provider error:", {
+                    name: error.error.name,
+                    code: error.error.code,
+                    message: error.error.message,
+                });
+            }
+
             if (error.response) {
                 console.error("API Response:", error.response.data);
             }
+
+            // Try to decode the revert reason if available
+            try {
+                if (error.error && error.error.data) {
+                    const reason = ethers.utils.toUtf8String('0x' + error.error.data.slice(138));
+                    console.error("Revert reason:", reason);
+                }
+            } catch (decodeError) {
+                console.error("Could not decode revert reason");
+            }
+
+            console.error("Full error:", error);
         }
     }
 
