@@ -104,12 +104,21 @@ const WorkNightAdmin = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        // Fetch all transactions (increased offset to get total count)
-        const response = await fetch(`https://api-holesky.etherscan.io/api?module=account&action=txlist&address=0xBE384aa1b5a393f79A1dfe5aa6cFD96aF7250867&page=1&offset=100&sort=desc&apikey=KBENR239TJX9PM81K6HTHS6GX1V3AP716H`);
-        const data = await response.json();
+        // Fetch all transactions for total count
+        const totalResponse = await fetch(`https://api-holesky.etherscan.io/api?module=account&action=txlist&address=0xBE384aa1b5a393f79A1dfe5aa6cFD96aF7250867&page=1&offset=10000&sort=desc&apikey=KBENR239TJX9PM81K6HTHS6GX1V3AP716H`);
+        const totalData = await totalResponse.json();
         
-        if (data.status === "1" && data.result.length > 0) {
-          const transactions = data.result.map((tx: any) => ({
+        // Fetch only the most recent transaction
+        const recentResponse = await fetch(`https://api-holesky.etherscan.io/api?module=account&action=txlist&address=0xBE384aa1b5a393f79A1dfe5aa6cFD96aF7250867&page=1&offset=1&sort=desc&apikey=KBENR239TJX9PM81K6HTHS6GX1V3AP716H`);
+        const recentData = await recentResponse.json();
+        
+        if (totalData.status === "1") {
+          // Update total count
+          setTotalApplications(totalData.result.length);
+        }
+        
+        if (recentData.status === "1" && recentData.result.length > 0) {
+          const transactions = recentData.result.map((tx: any) => ({
             hash: tx.hash,
             timestamp: new Date(parseInt(tx.timeStamp) * 1000).toLocaleString(),
             timeMs: parseInt(tx.timeStamp) * 1000,
@@ -119,18 +128,17 @@ const WorkNightAdmin = () => {
             status: tx.isError === "0" ? "Success" : "Failed"
           }));
 
-          // Update total applications with total transaction count
-          setTotalApplications(transactions.length);
-
-          // Update recent transactions
+          // Update recent transactions (will only be the most recent one)
           setRecentTransactions(transactions);
 
-          // Check system status based on last 5 transactions
-          const last5Transactions = transactions.slice(0, 5);
+          // Update system status based on recent transactions from total data
+          const last5Transactions = totalData.result.slice(0, 5).map((tx: any) => ({
+            status: tx.isError === "0" ? "Success" : "Failed"
+          }));
           const allSuccessful = last5Transactions.every(tx => tx.status === "Success");
           
           // Calculate time since last transaction
-          const lastTransactionTime = transactions[0].timeMs;
+          const lastTransactionTime = parseInt(totalData.result[0].timeStamp) * 1000;
           const currentTime = Date.now();
           const timeDiff = currentTime - lastTransactionTime;
           
@@ -188,9 +196,9 @@ const WorkNightAdmin = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <StatsCard
               icon={Users}
-              title="Total Transactions"
+              title="Total Users"
               value={totalApplications}
-              subtext="On Holesky Testnet"
+              subtext="All-time transactions"
               subtextColor="text-green-600"
               delay={0.1}
             />
