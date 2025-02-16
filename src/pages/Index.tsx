@@ -41,13 +41,13 @@ const Index = () => {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium rounded-full bg-teal-500/10 text-teal-300 backdrop-blur-sm">
+            <span className="inline-block px-6 py-2.5 mb-8 text-xl font-semibold rounded-full bg-teal-500/10 text-teal-300 backdrop-blur-sm transform hover:scale-105 transition-all duration-300">
               Introducing CipherShield
             </span>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold mb-8 bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent">
               Making discrimination mathematically impossible
             </h1>
-            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-12">
               Our innovative Web3 protocol ensures complete fairness through mathematical principles,
               creating a truly equitable digital ecosystem.
             </p>
