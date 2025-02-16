@@ -109,6 +109,7 @@ const US_STATES = [
 const WorkNight = () => {
   const [formData, setFormData] = useState<ApplicationFormData>(initialFormData);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
   const totalSteps = 2;
@@ -120,6 +121,7 @@ const WorkNight = () => {
       title: "Application Submitted!",
       description: "Your application has been received.",
     });
+    setIsSubmitted(true);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,6 +163,28 @@ const WorkNight = () => {
       description: "Your information has been saved. Moving to next section.",
     });
   };
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header isWorkNight />
+        <div className="max-w-4xl mx-auto p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center space-y-6"
+          >
+            <h1 className="text-3xl font-bold text-[#0066CC] mb-4">Application Submitted!</h1>
+            <div className="bg-white p-6 rounded-lg shadow-md border border-[#0066CC]/20">
+              <p className="text-gray-600 text-lg">
+                Thank you for your application. Your information is secure and protected through Dual Key homomorphic encryption.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
