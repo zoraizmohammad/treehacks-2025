@@ -34,6 +34,8 @@ const WorkNightAdmin = () => {
   const [aggregateData, setAggregateData] = useState<number[]>([]);
   const [totalApplications, setTotalApplications] = useState(0);
   const [aggregateError, setAggregateError] = useState<string | null>(null);
+  const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
+  const defaultAggregateData = Array(18).fill(0);
 
   useEffect(() => {
     // Fetch aggregate data
@@ -52,9 +54,14 @@ const WorkNightAdmin = () => {
           // Calculate total applications from first 6 values (age groups)
           const total = data.decrypted.slice(0, 6).reduce((acc: number, val: number) => acc + val, 0);
           setTotalApplications(total);
+        } else {
+          setAggregateData(defaultAggregateData);
         }
       })
-      .catch((err) => setAggregateError(err.message));
+      .catch((err) => {
+        setAggregateError(err.message);
+        setAggregateData(defaultAggregateData);
+      });
   }, []);
 
   useEffect(() => {
@@ -96,23 +103,33 @@ const WorkNightAdmin = () => {
     };
   }, []);
 
-  const recentTransactions = [
-    {
-      hash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-      timestamp: "2024-03-14 15:30:45",
-      from: "0xbe384aa1b5a393f79a1dfe5aa6cfd96af7250867",
-      to: "0x9876543210fedcba9876543210fedcba9876543210",
-      value: "0.05 ETH",
-      status: "Success"
-    },
-    // Add more mock transactions as needed
-  ];
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        // Holesky Etherscan API endpoint
+        const response = await fetch(`https://api-holesky.etherscan.io/api?module=account&action=txlist&address=0xBE384aa1b5a393f79A1dfe5aa6cFD96aF7250867&page=1&offset=1&sort=desc&apikey=KBENR239TJX9PM81K6HTHS6GX1V3AP716H`);
+        const data = await response.json();
+        
+        if (data.status === "1" && data.result.length > 0) {
+          const transactions = data.result.map((tx: any) => ({
+            hash: tx.hash,
+            timestamp: new Date(parseInt(tx.timeStamp) * 1000).toLocaleString(),
+            from: tx.from,
+            to: tx.to,
+            value: `${(parseInt(tx.value) / 1e18).toFixed(4)} ETH`,
+            status: tx.isError === "0" ? "Success" : "Failed"
+          }));
+          setRecentTransactions(transactions);
+        }
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        // Fallback to empty array if there's an error
+        setRecentTransactions([]);
+      }
+    };
 
-  const mockVectorSet = [
-    [0.8234, 0.1234, 0.4567, 0.7890],
-    [0.2345, 0.5678, 0.9012, 0.3456],
-    [0.6789, 0.0123, 0.4567, 0.8901]
-  ];
+    fetchTransactions();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -282,9 +299,16 @@ const WorkNightAdmin = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="bg-gray-50 p-4 rounded-lg font-mono text-sm">
-                      <pre className="whitespace-pre-wrap">
-                        {JSON.stringify(mockVectorSet, null, 2)}
-                      </pre>
+                      <div className="grid grid-cols-3 gap-2">
+                        {(aggregateData.length > 0 ? aggregateData : defaultAggregateData).slice(0, 18).map((value, index) => (
+                          <div key={index} className="text-[#0066CC]">
+                            {value}
+                          </div>
+                        ))}
+                      </div>
+                      {aggregateData.length > 18 && (
+                        <div className="text-gray-500 mt-2">... {aggregateData.length - 18} more values</div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
