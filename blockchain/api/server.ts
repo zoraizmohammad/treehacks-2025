@@ -1,5 +1,5 @@
 import express from 'express';
-import { ethers } from 'ethers';
+import { utils } from 'ethers';
 import cors from 'cors';
 
 const app = express();
@@ -11,7 +11,7 @@ function aggregateData(encryptedData: string[], type: string): number {
     // For testing, we'll decrypt the mock data and perform the requested aggregation
     const decryptedData = encryptedData.map(row => {
         const hexString = row.startsWith('0x') ? row.slice(2) : row;
-        const jsonString = ethers.toUtf8String('0x' + hexString);
+        const jsonString = utils.toUtf8String('0x' + hexString);
         return JSON.parse(jsonString).value;
     });
 

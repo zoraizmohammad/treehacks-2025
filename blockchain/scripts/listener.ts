@@ -1,4 +1,5 @@
-import { ethers } from "ethers";
+import { ethers } from "hardhat";
+import { Contract } from "ethers";
 import dotenv from "dotenv";
 import axios from "axios";
 
@@ -14,29 +15,21 @@ const CONTRACT_ABI = [
     "function markRequestProcessed(uint256 requestId)"
 ];
 
-// Configuration
-const config = {
-    providerUrl: process.env.PROVIDER_URL || "http://localhost:8545",
-    contractAddress: process.env.CONTRACT_ADDRESS || "",
-    aggregatorApiUrl: process.env.AGGREGATOR_API_URL || "http://localhost:3000/api/aggregate",
-    privateKey: process.env.PRIVATE_KEY || ""
-};
-
 class BlockchainListener {
-    private provider: ethers.Provider;
-    private contract: ethers.Contract;
-    private wallet: ethers.Wallet;
+    private contract: Contract;
 
     constructor() {
         console.log("Initializing BlockchainListener...");
-        console.log("Provider URL:", config.providerUrl);
-        console.log("Contract Address:", config.contractAddress);
-        console.log("API URL:", config.aggregatorApiUrl);
 
-        // Initialize provider and contract
-        this.provider = new ethers.JsonRpcProvider(config.providerUrl);
-        this.wallet = new ethers.Wallet(config.privateKey, this.provider);
-        this.contract = new ethers.Contract(config.contractAddress, CONTRACT_ABI, this.wallet);
+        // Initialize contract using Hardhat's ethers instance
+        this.contract = new Contract(
+            process.env.CONTRACT_ADDRESS || "",
+            CONTRACT_ABI,
+            (ethers as any).provider.getSigner()
+        );
+
+        console.log("Contract Address:", process.env.CONTRACT_ADDRESS);
+        console.log("API URL:", process.env.AGGREGATOR_API_URL);
     }
 
     async start() {
@@ -58,12 +51,12 @@ class BlockchainListener {
 
                 console.log("Calling aggregator API...");
                 // Call the Web2 aggregator API
-                const response = await axios.post(config.aggregatorApiUrl, {
+                const response = await axios.post(process.env.AGGREGATOR_API_URL || "http://localhost:3000/api/aggregate", {
                     requestId: requestId.toString(),
                     requester,
                     aggregationType,
                     dataCount: dataCount.toString(),
-                    encryptedData: encryptedData.map((row: Uint8Array) => ethers.hexlify(row))
+                    encryptedData: encryptedData.map((row: Uint8Array) => ethers.utils.hexlify(row))
                 });
 
                 console.log("API Response:", response.data);

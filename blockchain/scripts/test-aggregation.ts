@@ -1,11 +1,15 @@
-import { ethers } from "hardhat";
+import { ethers } from "ethers";
+import * as hre from "hardhat";
 import { PrivateDataAggregator } from "../typechain-types";
+import { ContractTransaction, ContractReceipt } from "@ethersproject/contracts";
+import { BigNumber } from "@ethersproject/bignumber";
+import { Event } from "@ethersproject/contracts";
 
 async function main() {
     // Get the contract instance
     const contractAddress = process.env.CONTRACT_ADDRESS || "0x1399230a24D85be6AB8ce794e39B667058A445d3";
     console.log("Using contract at:", contractAddress);
-    const contract = await ethers.getContractAt("PrivateDataAggregator", contractAddress);
+    const contract = await hre.ethers.getContractAt("PrivateDataAggregator", contractAddress);
 
     console.log("Testing PrivateDataAggregator contract...\n");
 
@@ -17,14 +21,14 @@ async function main() {
                 value: Math.floor(Math.random() * 1000),
                 timestamp: Date.now()
             };
-            return ethers.toUtf8Bytes(JSON.stringify(mockData));
+            return ethers.utils.toUtf8Bytes(JSON.stringify(mockData));
         });
 
         console.log("Submitting insufficient data (5 records)...");
         const tx1 = await contract.requestAggregation("average", insufficientData, {
             gasLimit: 1000000,
-            maxFeePerGas: ethers.parseUnits("100", "gwei"),
-            maxPriorityFeePerGas: ethers.parseUnits("2", "gwei")
+            maxFeePerGas: ethers.utils.parseUnits("100", "gwei"),
+            maxPriorityFeePerGas: ethers.utils.parseUnits("2", "gwei")
         });
         await tx1.wait();
     } catch (error: any) {
@@ -44,35 +48,31 @@ async function main() {
             };
             const jsonData = JSON.stringify(mockData);
             console.log(`Record ${index}:`, jsonData);
-            return ethers.toUtf8Bytes(jsonData);
+            return ethers.utils.toUtf8Bytes(jsonData);
         });
 
         console.log("\nSubmitting aggregation request...");
         const tx2 = await contract.requestAggregation("average", validData, {
             gasLimit: 1000000,
-            maxFeePerGas: ethers.parseUnits("100", "gwei"),
-            maxPriorityFeePerGas: ethers.parseUnits("2", "gwei")
+            maxFeePerGas: ethers.utils.parseUnits("100", "gwei"),
+            maxPriorityFeePerGas: ethers.utils.parseUnits("2", "gwei")
         });
         console.log("Transaction hash:", tx2.hash);
         const receipt = await tx2.wait();
-        console.log("Transaction mined in block:", receipt?.blockNumber);
+        if (!receipt) throw new Error("Transaction failed");
+        console.log("Transaction mined in block:", receipt.blockNumber);
 
         // Get request ID from event
-        const requestedEvent = receipt?.logs.find(
-            (log) => log.topics[0] === contract.interface.getEvent("AggregationRequested").topicHash
+        const requestedEvent = receipt.events?.find(
+            (event: Event) => event.event === "AggregationRequested"
         );
 
         if (requestedEvent) {
-            const decodedEvent = contract.interface.parseLog({
-                topics: requestedEvent.topics as string[],
-                data: requestedEvent.data
-            });
-            const requestId = decodedEvent?.args[0];
-
+            const requestId = requestedEvent.args?.[0];
             console.log("\nAggregation request created!");
             console.log(`Request ID: ${requestId}`);
-            console.log(`Data count: ${decodedEvent?.args[3]}`);
-            console.log(`Aggregation type: ${decodedEvent?.args[2]}`);
+            console.log(`Data count: ${requestedEvent.args?.[3]}`);
+            console.log(`Aggregation type: ${requestedEvent.args?.[2]}`);
 
             // Get request details
             const [requester, aggType, timestamp, isProcessed, dataCount] =

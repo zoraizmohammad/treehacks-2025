@@ -8,10 +8,9 @@ async function main() {
 
     // Deploy the contract
     const privateDataAggregator = await PrivateDataAggregator.deploy();
-    await privateDataAggregator.waitForDeployment();
+    await privateDataAggregator.deployed();
 
-    const address = await privateDataAggregator.getAddress();
-    console.log("PrivateDataAggregator deployed to:", address);
+    console.log("PrivateDataAggregator deployed to:", privateDataAggregator.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
