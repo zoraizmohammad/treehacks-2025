@@ -1,0 +1,65 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-[#1A1F2C] text-white font-[Inter];
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  .glass-card {
+    @apply bg-[#221F26]/30 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg;
+  }
+
+  .glass-button {
+    @apply bg-gradient-to-r from-[#F97316] to-[#0EA5E9] text-white font-medium py-2 px-6 rounded-lg 
+           transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/20
+           active:transform active:scale-95;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 rounded-lg border border-white/10 bg-black/20 text-white
+           focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:ring-opacity-50 
+           transition-all duration-200;
+  }
+
+  .rainbow-text {
+    @apply bg-gradient-to-r from-[#F97316] via-white to-[#0EA5E9] bg-clip-text text-transparent;
+  }
+
+  .encryption-visualizer {
+    @apply absolute top-4 right-4 w-32 h-32 rounded-full 
+           bg-gradient-to-r from-[#F97316] to-[#0EA5E9] opacity-20 blur-xl;
+  }
+}
