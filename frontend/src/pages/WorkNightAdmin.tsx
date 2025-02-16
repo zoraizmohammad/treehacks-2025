@@ -22,10 +22,39 @@ interface LatestCandidate {
   created_at: string;
 }
 
+interface WorkNightAdminProps {
+  aggregateData: number[];
+}
+
 const WorkNightAdmin = () => {
   const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
   const [latestCandidate, setLatestCandidate] = useState<LatestCandidate | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [aggregateData, setAggregateData] = useState<number[]>([]);
+  const [totalApplications, setTotalApplications] = useState(0);
+  const [aggregateError, setAggregateError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch aggregate data
+    fetch('http://localhost:18080/aggregate', { method: 'POST' })
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text || 'Network error');
+          });
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.decrypted && Array.isArray(data.decrypted)) {
+          setAggregateData(data.decrypted);
+          // Calculate total applications from first 6 values (age groups)
+          const total = data.decrypted.slice(0, 6).reduce((acc: number, val: number) => acc + val, 0);
+          setTotalApplications(total);
+        }
+      })
+      .catch((err) => setAggregateError(err.message));
+  }, []);
 
   useEffect(() => {
     const fetchLatestCandidate = async () => {
@@ -103,7 +132,7 @@ const WorkNightAdmin = () => {
             <StatsCard
               icon={Users}
               title="Total Applications"
-              value="847"
+              value={totalApplications}
               subtext="+8% from last week"
               subtextColor="text-green-600"
               delay={0.1}
@@ -126,7 +155,11 @@ const WorkNightAdmin = () => {
           </div>
 
           {/* Demographic Insights */}
-          <DemographicInsights />
+          {aggregateError ? (
+            <div className="p-4 text-red-600">Error: {aggregateError}</div>
+          ) : (
+            <DemographicInsights data={aggregateData} />
+          )}
 
           {/* Quick Actions */}
           <QuickActions />

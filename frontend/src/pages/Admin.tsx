@@ -51,7 +51,7 @@ const AdminDashboard = () => {
   }, []);
 
   if (isWorkNight) {
-    return <WorkNightAdmin />;
+    return <WorkNightAdmin aggregateData={aggregateData} />;
   }
 
   return (

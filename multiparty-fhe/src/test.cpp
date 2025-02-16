@@ -45,18 +45,21 @@ struct CORSMiddleware {
     struct context {};
 
     void before_handle(crow::request& req, crow::response& res, context&) {
-        // Add CORS headers for all incoming requests
-        res.add_header("Access-Control-Allow-Origin", "*");
-        res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-        res.add_header("Access-Control-Allow-Headers", "*");
-        // For OPTIONS preflight requests, immediately return a success response.
+        // For OPTIONS preflight requests only
         if (req.method == "OPTIONS"_method) {
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            res.add_header("Access-Control-Allow-Headers", "*");
             res.end();
         }
+        // Don't add headers for non-OPTIONS requests here
     }
 
     void after_handle(crow::request& req, crow::response& res, context&) {
-        // Ensure CORS headers are present in the response even if the response is generated early or is an error.
+        // Only add headers if they haven't been added yet
+        if (!res.get_header_value("Access-Control-Allow-Origin").empty()) {
+            return;
+        }
         res.add_header("Access-Control-Allow-Origin", "*");
         res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
         res.add_header("Access-Control-Allow-Headers", "*");
@@ -160,54 +163,71 @@ int main() {
     CROW_ROUTE(app, "/data").methods("POST"_method)
     ([](const crow::request& req) {
         try {
+            cout << "🔵 Starting data ingestion process..." << endl;
+            
             auto j = json::parse(req.body);
+            cout << "🟢 Successfully parsed JSON payload" << endl;
+            
             // For debugging, print the non‑sensitive fields if provided.
             if(j.contains("fields")) {
-                cout << "[/data] Received non‑sensitive fields: " << j["fields"].dump() << endl;
+                cout << "⚪ Non-sensitive fields found: " << j["fields"].dump() << endl;
             }
+            
             // Process sensitive fields.
             if (!j.contains("sensitive_fields")) {
+                cout << "🔴 Error: Missing sensitive_fields" << endl;
                 return crow::response(400, "Missing 'sensitive_fields' in JSON payload.");
             }
             json sens = j["sensitive_fields"];
             if (!sens.contains("ratings")) {
+                cout << "🔴 Error: Missing ratings field" << endl;
                 return crow::response(400, "Missing 'ratings' in sensitive_fields.");
             }
+            
             // Extract the ratings array.
             vector<int64_t> ratings = sens["ratings"].get<vector<int64_t>>();
-            cout << "[/data] Sensitive data (ratings): ";
+            cout << "🟢 Extracted ratings array: ";
             for (auto r : ratings) cout << r << " ";
             cout << endl;
             
             // Create plaintext from ratings.
             Plaintext pt = cc->MakePackedPlaintext(ratings);
-            cout << "[/data] Created plaintext: " << *pt << endl;
+            cout << "🟢 Created packed plaintext" << endl;
             
             // Encrypt using the joint public key.
+            cout << "🟡 Starting encryption..." << endl;
             Ciphertext<DCRTPoly> ct = cc->Encrypt(jointPublicKey, pt);
+            cout << "🟢 Encryption complete" << endl;
+            
             {
                 lock_guard<mutex> lock(g_mtx);
                 g_ciphertexts.push_back(ct);
+                cout << "🟢 Added to in-memory storage" << endl;
             }
             
             // --- storage TO CSV ---
+            cout << "🟡 Starting CSV storage process..." << endl;
+            
             // Serialize the ciphertext to binary.
             stringstream ss;
             Serial::Serialize(ct, ss, SerType::BINARY);
             string binary_str = ss.str();
+            cout << "🟢 Serialized ciphertext" << endl;
+            
             // Encode the binary string to base64.
             string base64_str = base64_encode(binary_str);
             base64_str = base64_str.substr(200);
+            cout << "🟢 Encoded to base64" << endl;
             
             // Extract the 'id' and 'name' from the provided fields.
-            int id = 0;
+            string id = "";
             string name = "";
             if(j.contains("fields")) {
                 auto fields = j["fields"];
                 if(fields.contains("id"))
-                    id = fields["id"];
+                    id = fields["id"].get<string>();
                 if(fields.contains("name"))
-                    name = fields["name"];
+                    name = fields["name"].get<string>();
             }
             
             // Append this record into the storage CSV file.
@@ -218,15 +238,17 @@ int main() {
             }
             ofstream ofs("storage.csv", ios::app);
             if(!file_exists) {
-                // Write header if the file didn't exist
                 ofs << "id,name,ciphertext\n";
+                cout << "🟢 Created new CSV file" << endl;
             }
             ofs << id << "," << name << "," << base64_str << "\n";
             ofs.close();
-            // --- END CSV storage ---
+            cout << "🟢 Successfully wrote to CSV" << endl;
             
+            cout << "🟢 Data ingestion complete!" << endl;
             return crow::response(200, "Data ingested and encrypted.");
         } catch (std::exception &e) {
+            cout << "🔴 Error during data ingestion: " << e.what() << endl;
             return crow::response(500, e.what());
         }
     });
@@ -254,7 +276,7 @@ int main() {
         Plaintext finalPlaintext = Party2FinalDecrypt(aggregated, authorityPartial);
         // Set the plaintext length to the number of meaningful entries.
         // (Here we assume the ratings array length is known; e.g., 4.)
-        finalPlaintext->SetLength(4);
+        // finalPlaintext->SetLength(4);
         cout << "[/aggregate] Final decrypted plaintext: " << *finalPlaintext << endl;
         
         json res;

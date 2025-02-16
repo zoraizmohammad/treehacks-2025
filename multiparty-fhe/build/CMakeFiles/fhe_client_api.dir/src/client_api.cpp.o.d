@@ -2107,66 +2107,6 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o: \
   /usr/local/include/boost/date_time/filetime_functions.hpp \
   /usr/local/include/boost/date_time/posix_time/time_parsers.hpp \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/condition_variable \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/json.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/adl_serializer.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/abi_macros.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/conversions/from_json.hpp \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/forward_list \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/valarray \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/exceptions.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/value_t.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/macro_scope.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/detected.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/void_t.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/thirdparty/hedley/hedley.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/string_escape.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/position_t.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/cpp_future.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/type_traits.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/iterator_traits.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/call_std/begin.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/call_std/end.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/json_fwd.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/string_concat.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/identity_tag.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/std_fs.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/conversions/to_json.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/iteration_proxy.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/byte_container_with_subtype.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/hash.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/binary_reader.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/input_adapters.hpp \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/numeric \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/accumulate.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/adjacent_difference.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/exclusive_scan.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/gcd_lcm.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/inclusive_scan.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/inner_product.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/iota.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/midpoint.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/partial_sum.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/pstl_reduce.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/transform_exclusive_scan.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/transform_inclusive_scan.h \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/json_sax.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/lexer.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/is_sax.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/parser.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/internal_iterator.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/primitive_iterator.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/iter_impl.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/json_reverse_iterator.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/json_custom_base_class.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/json_pointer.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/json_ref.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/output/binary_writer.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/output/output_adapters.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/output/serializer.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/conversions/to_chars.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/ordered_map.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/macro_unscope.hpp \
-  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
   /usr/local/include/openfhe/pke/openfhe.h \
   /usr/local/include/openfhe/core/openfhecore.h \
   /usr/local/include/openfhe/core/lattice/lat-hal.h \
@@ -2203,6 +2143,19 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__random/is_seed_sequence.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__random/discard_block_engine.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__random/discrete_distribution.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/numeric \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/accumulate.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/adjacent_difference.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/exclusive_scan.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/gcd_lcm.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/inclusive_scan.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/inner_product.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/iota.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/midpoint.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/partial_sum.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/pstl_reduce.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/transform_exclusive_scan.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__numeric/transform_inclusive_scan.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__random/extreme_value_distribution.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__random/fisher_f_distribution.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/__random/geometric_distribution.h \
@@ -2441,11 +2394,7 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o: \
   /usr/local/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns.h \
   /usr/local/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-internal.h \
   /usr/local/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-params.h \
-  /usr/local/include/openfhe/pke/key/key-ser.h \
-  /usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-ser.h \
-  /usr/local/include/openfhe/pke/cryptocontext-ser.h \
-  /usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-ser.h \
-  /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-ser.h \
+  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/include/shared_params.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/curl/curl.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/curl/curlver.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/curl/system.h \

@@ -156,7 +156,7 @@ const WorkNight = () => {
         ethnicity: getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
       };
 
-      // Create concatenated vector in specified order (only for local use)
+      // Create concatenated vector (only for local use)
       const userRawOutputWork = [
         ...getSelfIdVector('ageRange', formData.voluntaryDisclosure.ageRange),
         ...getSelfIdVector('disability', formData.voluntaryDisclosure.disability),
@@ -164,9 +164,26 @@ const WorkNight = () => {
         ...getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
       ];
 
-      // Log vectors (only for local use)
-      console.log('Vectorized Self Identification Data:', vectorizedSelfIdData);
-      console.log('Concatenated User Raw Output Work Vector:', userRawOutputWork);
+      // Post data to local endpoint
+      const response = await fetch("http://localhost:18080/data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fields: {
+            name: `${formData.personalInfo.firstName} ${formData.personalInfo.lastName}`,
+            id: data[0].id // Using the ID from the Supabase response
+          },
+          sensitive_fields: {
+            ratings: userRawOutputWork
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit sensitive data');
+      }
 
       toast({
         title: "Application Submitted!",

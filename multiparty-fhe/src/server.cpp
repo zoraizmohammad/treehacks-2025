@@ -2,6 +2,7 @@
 
 #include <openfhe/pke/openfhe.h>
 #include "crow.h"
+#include "shared_params.h"  // Contains GenerateContext()
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -12,239 +13,151 @@
 using namespace lbcrypto;
 using namespace std;
 
-const string CSV_FILE = "data.csv";
+// === Helper functions for binary serialization ===
+string PublicKeyToBinary(const PublicKey<DCRTPoly>& pk) {
+    stringstream ss;
+    Serial::Serialize(pk, ss, SerType::BINARY);
+    return ss.str();
+}
 
-// Add a base64 decode helper function
-static string base64_decode(const string& encoded_string) {
-    static const string base64_chars = 
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz"
-        "0123456789+/";
-    
-    string ret;
-    int in_len = encoded_string.size();
-    int i = 0;
-    int j = 0;
-    int in_ = 0;
-    unsigned char char_array_4[4], char_array_3[3];
-    
-    while (in_len-- && (encoded_string[in_] != '=') &&
-           (isalnum(encoded_string[in_]) || (encoded_string[in_] == '+') || (encoded_string[in_] == '/'))) {
-        char_array_4[i++] = encoded_string[in_]; 
-        in_++;
-        if (i == 4) {
-            for (i = 0; i < 4; i++)
-                char_array_4[i] = base64_chars.find(char_array_4[i]);
-            char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-            char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-            char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-            for (i = 0; i < 3; i++)
-                ret += char_array_3[i];
-            i = 0;
-        }
-    }
-    
-    if (i) {
-        for (j = i; j < 4; j++)
-            char_array_4[j] = 0;
-        for (j = 0; j < 4; j++)
-            char_array_4[j] = base64_chars.find(char_array_4[j]);
-        char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-        char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-        char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-        for (j = 0; j < i - 1; j++) 
-            ret += char_array_3[j];
-    }
-    
-    return ret;
+PublicKey<DCRTPoly> BinaryToPublicKey(const string& data) {
+    stringstream ss(data);
+    PublicKey<DCRTPoly> pk;
+    Serial::Deserialize(pk, ss, SerType::BINARY);
+    return pk;
+}
+
+string CiphertextToBinary(const Ciphertext<DCRTPoly>& ct) {
+    stringstream ss;
+    Serial::Serialize(ct, ss, SerType::BINARY);
+    return ss.str();
+}
+
+Ciphertext<DCRTPoly> BinaryToCiphertext(const string& data) {
+    stringstream ss(data);
+    Ciphertext<DCRTPoly> ct;
+    Serial::Deserialize(ct, ss, SerType::BINARY);
+    return ct;
 }
 
 class FHEServer {
 private:
+    // Use the shared context from shared_params.h.
     CryptoContext<DCRTPoly> cc;
     KeyPair<DCRTPoly> keyPair;
     bool isInitialized;
+    
+    // In-memory storage for encrypted data (each entry is a binary string).
+    vector<string> encryptedDataStorage;
 
 public:
-    FHEServer() : isInitialized(false) {
+    FHEServer() : cc(GenerateContext()), isInitialized(false) {
         cout << "Initializing FHE Server..." << endl;
-        
-        // Initialize parameters
-        CCParams<CryptoContextBFVRNS> parameters;
-        parameters.SetPlaintextModulus(65537);
-        parameters.SetMultiplicativeDepth(2);
-        parameters.SetMultipartyMode(NOISE_FLOODING_MULTIPARTY);
-
-        cc = GenCryptoContext(parameters);
-
-        cc->Enable(PKE);
-        cc->Enable(KEYSWITCH);
-        cc->Enable(LEVELEDSHE);
-        cc->Enable(MULTIPARTY);
-
+        // Generate the initial key pair.
         keyPair = cc->KeyGen();
-        
         isInitialized = true;
         cout << "Server initialized successfully" << endl;
     }
 
-    // Serialize public key to string (simplified version)
-    std::string serializePublicKey() {
-        try {
-            std::stringstream ss;
-            // Use JSON serialization instead of binary
-            Serial::Serialize(keyPair.publicKey, ss, SerType::JSON);
-            return ss.str();
-        } catch (const std::exception& e) {
-            std::cout << "Error serializing public key: " << e.what() << std::endl;
-            return "";
-        }
+    // Return the server's public key as raw binary.
+    string getPublicKeyBinary() {
+        return PublicKeyToBinary(keyPair.publicKey);
     }
 
-    // Process client's key contribution
-    bool processClientKey(const std::string& clientKeyStr) {
-        try {
-            
-            return true;
-        } catch (const std::exception& e) {
-            std::cout << "Error processing client key: " << e.what() << std::endl;
+    // Process the client's public key (raw binary) and update our key pair.
+    bool processClientKey(const string& clientKeyData) {
+        PublicKey<DCRTPoly> clientPublicKey = BinaryToPublicKey(clientKeyData);
+        keyPair = cc->MultipartyKeyGen(clientPublicKey);
+        if (!keyPair.good()) {
+            cout << "Error: Updated server key pair is not good." << endl;
             return false;
         }
+        cout << "Server updated its key pair with client's contribution." << endl;
+        return true;
     }
 
     bool isReady() const { return isInitialized; }
 
-    // Aggregate encrypted attributes using homomorphic addition.
-    Ciphertext<DCRTPoly> aggregateEncryptedAttributes() {
-        ifstream ifs(CSV_FILE);
-        string line;
-        Ciphertext<DCRTPoly> aggregated;
-        bool first = true;
-
-        while(getline(ifs, line)) {
-            cout << "[INFO] Processing CSV row: " << line << endl;
-            vector<string> tokens;
-            stringstream ss(line);
-            string token;
-            while(getline(ss, token, ',')) {
-                tokens.push_back(token);
-            }
-            
-            if (tokens.size() >= 3) {
-                try {
-                    // Expect the ciphertext to be stored in token[2] as a base64 encoded binary string.
-                    string base64Token = tokens[2];
-                    cout << "[DEBUG] Base64 token: " << base64Token << endl;
-                    
-                    // Base64 decode the stored string.
-                    string binaryData = base64_decode(base64Token);
-                    if (binaryData.empty()) {
-                        cout << "[ERROR] Base64 decoding produced an empty string for token: " << base64Token << endl;
-                        continue;
-                    }
-                    stringstream attrStream(binaryData);
-                    
-                    Ciphertext<DCRTPoly> ciphertext;
-                    // Use BINARY deserialization to match the client serialization.
-                    Serial::Deserialize(ciphertext, attrStream, SerType::BINARY);
-                    cout << "[DEBUG] Successfully deserialized ciphertext." << endl;
-
-                    if (first) {
-                        aggregated = ciphertext;
-                        first = false;
-                    } else {
-                        aggregated = cc->EvalAdd(aggregated, ciphertext);
-                    }
-                } catch (const exception& e) {
-                    cout << "[ERROR] Error processing encrypted attribute in row: " << line 
-                         << " - Exception: " << e.what() << endl;
-                }
-            } else {
-                cout << "[WARN] Skipping row (not enough tokens): " << line << endl;
-            }
-        }
-        ifs.close();
-        return aggregated;
+    // Store incoming encrypted data (raw binary) in memory.
+    void storeEncryptedData(const string& binaryCiphertext) {
+        encryptedDataStorage.push_back(binaryCiphertext);
+        cout << "Stored encrypted data. Total count: " << encryptedDataStorage.size() << endl;
     }
 
-    // Partially decrypt the aggregated ciphertext.
-    string partiallyDecryptCiphertext(const Ciphertext<DCRTPoly>& ciphertext) {
-        try {
-            // Use MultipartyDecryptMain to compute the decryption share for non-leader parties.
-            auto mainDecryption = cc->MultipartyDecryptMain({ciphertext}, keyPair.secretKey);
-            stringstream ss;
-            Serial::Serialize(mainDecryption[0], ss, SerType::JSON);
-            return ss.str();
-        } catch (const exception& e) {
-            cout << "[ERROR] Error during multiparty decryption main: " << e.what() << endl;
-            return "";
+    // Aggregate all stored ciphertexts using EvalAdd.
+    string aggregateEncryptedData() {
+        if (encryptedDataStorage.empty()) {
+            throw runtime_error("No encrypted data stored");
         }
+        Ciphertext<DCRTPoly> aggregated = BinaryToCiphertext(encryptedDataStorage[0]);
+        for (size_t i = 1; i < encryptedDataStorage.size(); i++) {
+            Ciphertext<DCRTPoly> ct = BinaryToCiphertext(encryptedDataStorage[i]);
+            aggregated = cc->EvalAdd(aggregated, ct);
+        }
+        return CiphertextToBinary(aggregated);
+    }
+
+    // Compute a partial decryption (raw binary) of the aggregated ciphertext.
+    string partiallyDecrypt(const string& aggregatedData) {
+        Ciphertext<DCRTPoly> aggregated = BinaryToCiphertext(aggregatedData);
+        auto partialVec = cc->MultipartyDecryptMain({ aggregated }, keyPair.secretKey);
+        // Serialize the partial decryption using binary serialization.
+        stringstream ss;
+        Serial::Serialize(partialVec[0], ss, SerType::BINARY);
+        return ss.str();
     }
 };
 
+//
+// Main: Define endpoints on a single Crow app instance
+//
 int main() {
-    FHEServer server;
+    FHEServer serverInstance;
     crow::SimpleApp app;
 
-    
-    app.server_name("FHE Server")
-       .port(8080)
-       .multithreaded();
-
-    // Public key endpoint
+    // Endpoint 1: GET /publicKey returns the server's public key (raw binary).
     CROW_ROUTE(app, "/publicKey")
-    ([&server]() {
-        if (!server.isReady()) {
+    ([&serverInstance]() -> crow::response {
+        if (!serverInstance.isReady())
             return crow::response(500, "Server not initialized");
-        }
-        
-        crow::json::wvalue response;
-        response["publicKey"] = server.serializePublicKey();
-        return crow::response(response.dump());
+        string pkData = serverInstance.getPublicKeyBinary();
+        return crow::response(pkData);
     });
 
-    // Join key endpoint
+    // Endpoint 2: POST /joinKey receives the client's public key (raw binary).
     CROW_ROUTE(app, "/joinKey").methods("POST"_method)
-    ([&server](const crow::request& req) {
-        std::cout << "Received payload size: " << req.body.size() << " bytes\n";
-        try {
-            auto x = crow::json::load(req.body);
-            if (!x) {
-                return crow::response(400, "Invalid JSON");
-            }
-            std::string clientKey = x["clientKey"].s();
-            if (server.processClientKey(clientKey)) {
-                return crow::response(200, "Joint key pair generated successfully");
-            } else {
-                return crow::response(500, "Failed to generate joint key pair");
-            }
-        } catch (const std::exception& e) {
-            return crow::response(500, std::string("Server error: ") + e.what());
-        }
+    ([&serverInstance](const crow::request& req) -> crow::response {
+        string clientKeyData = req.body; // raw binary
+        if (serverInstance.processClientKey(clientKeyData))
+            return crow::response(200, "Joint key pair generated successfully");
+        else
+            return crow::response(500, "Failed to generate joint key pair");
     });
 
-    // Add new aggregate endpoint
-    CROW_ROUTE(app, "/aggregate")
-    ([&server]() {
-        try {
-            auto aggregatedCiphertext = server.aggregateEncryptedAttributes();
-            string partiallyDecrypted = server.partiallyDecryptCiphertext(aggregatedCiphertext);
-            if (partiallyDecrypted.empty()) {
-                return crow::response(500, "Failed to partially decrypt result");
-            }
-            crow::json::wvalue response;
-            response["partially_decrypted"] = partiallyDecrypted;
-            stringstream ss;
-            Serial::Serialize(aggregatedCiphertext, ss, SerType::JSON);
-            response["aggregated_ciphertext"] = ss.str();
+    // Endpoint 3: POST /data receives encrypted data (raw binary) and stores it in memory.
+    CROW_ROUTE(app, "/data").methods("POST"_method)
+    ([&serverInstance](const crow::request& req) -> crow::response {
+        string encryptedData = req.body; // raw binary ciphertext
+        serverInstance.storeEncryptedData(encryptedData);
+        return crow::response(200, "Data stored successfully");
+    });
 
-            return crow::response(response.dump());
+    // Endpoint 4: GET /aggregate aggregates all stored ciphertexts and returns the aggregated ciphertext
+    // and the server's partial decryption concatenated with a '|' delimiter.
+    CROW_ROUTE(app, "/aggregate")
+    ([&serverInstance]() -> crow::response {
+        try {
+            string aggregatedData = serverInstance.aggregateEncryptedData();
+            string partial = serverInstance.partiallyDecrypt(aggregatedData);
+            // Concatenate with a delimiter.
+            string response = aggregatedData + "|" + partial;
+            return crow::response(response);
         } catch (const exception& e) {
             return crow::response(500, string("Server error: ") + e.what());
         }
     });
 
-    std::cout << "Starting server on port 8080..." << std::endl;
-    app.run();
+    cout << "Starting server on port 8080..." << endl;
+    app.port(8080).multithreaded().run();
     return 0;
 }

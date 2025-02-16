@@ -795,7 +795,6 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/exception
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/execution
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/filesystem
- /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/forward_list
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/fstream
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/functional
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/future
@@ -845,7 +844,6 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/unordered_map
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/unordered_set
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/utility
- /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/valarray
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/variant
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/vector
  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk/usr/include/c++/v1/version
@@ -1049,52 +1047,8 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdarg.h
  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stddef.h
  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/adl_serializer.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/byte_container_with_subtype.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/abi_macros.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/conversions/from_json.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/conversions/to_chars.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/conversions/to_json.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/exceptions.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/hash.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/binary_reader.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/input_adapters.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/json_sax.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/lexer.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/parser.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/input/position_t.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/internal_iterator.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/iter_impl.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/iteration_proxy.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/iterator_traits.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/json_reverse_iterator.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/iterators/primitive_iterator.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/json_custom_base_class.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/json_pointer.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/json_ref.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/macro_scope.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/macro_unscope.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/call_std/begin.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/call_std/end.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/cpp_future.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/detected.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/identity_tag.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/is_sax.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/std_fs.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/type_traits.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/meta/void_t.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/output/binary_writer.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/output/output_adapters.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/output/serializer.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/string_concat.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/string_escape.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/detail/value_t.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/json.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/json_fwd.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/ordered_map.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/thirdparty/hedley/hedley.hpp
- /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/build/_deps/json-src/include/nlohmann/thirdparty/hedley/hedley_undef.hpp
  /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/include/crow.h
+ /Users/adelmuursepp/webdev/TreeHacks25/treehacks-2025/multiparty-fhe/include/shared_params.h
  /usr/local/include/boost/algorithm/string.hpp
  /usr/local/include/boost/algorithm/string/case_conv.hpp
  /usr/local/include/boost/algorithm/string/classification.hpp
@@ -2362,7 +2316,6 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
  /usr/local/include/openfhe/pke/constants-defs.h
  /usr/local/include/openfhe/pke/constants.h
  /usr/local/include/openfhe/pke/cryptocontext-fwd.h
- /usr/local/include/openfhe/pke/cryptocontext-ser.h
  /usr/local/include/openfhe/pke/cryptocontext.h
  /usr/local/include/openfhe/pke/cryptocontextfactory.h
  /usr/local/include/openfhe/pke/cryptoobject.h
@@ -2381,7 +2334,6 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
  /usr/local/include/openfhe/pke/key/evalkey.h
  /usr/local/include/openfhe/pke/key/evalkeyrelin-fwd.h
  /usr/local/include/openfhe/pke/key/evalkeyrelin.h
- /usr/local/include/openfhe/pke/key/key-ser.h
  /usr/local/include/openfhe/pke/key/key.h
  /usr/local/include/openfhe/pke/key/keypair.h
  /usr/local/include/openfhe/pke/key/privatekey-fwd.h
@@ -2403,7 +2355,6 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
  /usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-pke.h
  /usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-pre.h
  /usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-scheme.h
- /usr/local/include/openfhe/pke/scheme/bfvrns/bfvrns-ser.h
  /usr/local/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-internal.h
  /usr/local/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns-params.h
  /usr/local/include/openfhe/pke/scheme/bfvrns/gen-cryptocontext-bfvrns.h
@@ -2416,7 +2367,6 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
  /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-pke.h
  /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-pre.h
  /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-scheme.h
- /usr/local/include/openfhe/pke/scheme/bgvrns/bgvrns-ser.h
  /usr/local/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-internal.h
  /usr/local/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns-params.h
  /usr/local/include/openfhe/pke/scheme/bgvrns/gen-cryptocontext-bgvrns.h
@@ -2430,7 +2380,6 @@ CMakeFiles/fhe_client_api.dir/src/client_api.cpp.o
  /usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-pre.h
  /usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-scheme.h
  /usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-schemeswitching.h
- /usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-ser.h
  /usr/local/include/openfhe/pke/scheme/ckksrns/ckksrns-utils.h
  /usr/local/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-internal.h
  /usr/local/include/openfhe/pke/scheme/ckksrns/gen-cryptocontext-ckksrns-params.h
