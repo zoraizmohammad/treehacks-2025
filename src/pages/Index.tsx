@@ -55,7 +55,7 @@ const Index = () => {
               className="bg-teal-500 hover:bg-teal-600 text-white rounded-full px-8 py-6 text-lg transition-all duration-300 transform hover:scale-105"
               onClick={() => navigate('/survey-creation')}
             >
-              Companies Sign up Here <ArrowRight className="ml-2 h-5 w-5" />
+              Companies Sign in Here <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </motion.div>
         </div>
