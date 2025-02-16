@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
-import { Users, FileText, Settings, Database, ChevronDown, ChevronUp, ExternalLink, UserRound } from "lucide-react";
+import { Users, FileText, Settings, Database, ChevronDown, ChevronUp, ExternalLink, UserRound, Table } from "lucide-react";
 import Header from "@/components/Header";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import StatsCard from "@/components/worknight/StatsCard";
 import QuickActions from "@/components/worknight/QuickActions";
 import DemographicInsights from "@/components/worknight/DemographicInsights";
 import { AggregationButton } from "@/components/AggregationButton";
+import CSVViewer from "@/components/worknight/CSVViewer";
 
 interface LatestCandidate {
   id: string;
@@ -29,6 +30,7 @@ interface WorkNightAdminProps {
 
 const WorkNightAdmin = () => {
   const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
+  const [isRawDataOpen, setIsRawDataOpen] = useState(false);
   const [latestCandidate, setLatestCandidate] = useState<LatestCandidate | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [aggregateData, setAggregateData] = useState<number[]>([]);
@@ -359,6 +361,34 @@ const WorkNightAdmin = () => {
                     </div>
                   </CardContent>
                 </Card>
+              </CollapsibleContent>
+            </Collapsible>
+          </motion.div>
+
+          {/* Raw Data Viewer */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="mt-8"
+          >
+            <Collapsible
+              open={isRawDataOpen}
+              onOpenChange={setIsRawDataOpen}
+              className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm"
+            >
+              <CollapsibleTrigger className="flex items-center gap-3 text-[#0066CC] w-full">
+                <Table className="w-5 h-5" />
+                <span className="font-medium">View Raw Data</span>
+                {isRawDataOpen ? (
+                  <ChevronUp className="ml-auto w-5 h-5" />
+                ) : (
+                  <ChevronDown className="ml-auto w-5 h-5" />
+                )}
+              </CollapsibleTrigger>
+
+              <CollapsibleContent className="mt-6">
+                <CSVViewer />
               </CollapsibleContent>
             </Collapsible>
           </motion.div>
