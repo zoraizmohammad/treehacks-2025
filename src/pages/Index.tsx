@@ -8,7 +8,40 @@ import SecurityInfo from "@/components/health-form/SecurityInfo";
 import { HealthFormData } from "@/types/form";
 import { getResponseVector } from "@/constants/vectorMappings";
 
-const encryptData = (data: any, publicKey: string) => {
+interface BasicHealthVector {
+  firstName: string;
+  lastName: string;
+  email: string;
+  age: string;
+  height: string;
+  weight: string;
+  bloodType: string;
+}
+
+interface AdditionalHealthVector {
+  exerciseFrequency: string;
+  sleepHours: string;
+  sleepQuality: string;
+  dietaryBalance: string;
+  mentalHealth: string;
+  energyLevels: string;
+  generalHealth: string;
+  chronicPain: string;
+  screenTimeImpact: string;
+  mindfulnessPractices: string;
+  writtenResponses: {
+    dietaryBalance: string;
+    mentalHealth: string;
+    generalHealth: string;
+    chronicPain: string;
+    screenTimeImpact: string;
+    mindfulnessPractices: string;
+  };
+}
+
+type EncryptableData = BasicHealthVector | AdditionalHealthVector;
+
+const encryptData = (data: EncryptableData, publicKey: string) => {
   return JSON.stringify(data) + `_encrypted_with_${publicKey}`;
 };
 
@@ -50,7 +83,7 @@ const Index = () => {
     e.preventDefault();
     
     // Create Basic Health Information vector
-    const basicHealthVector = {
+    const basicHealthVector: BasicHealthVector = {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
@@ -61,7 +94,7 @@ const Index = () => {
     };
 
     // Create Additional Health Information vector with original responses
-    const additionalHealthVector = {
+    const additionalHealthVector: AdditionalHealthVector = {
       exerciseFrequency: formData.exerciseFrequency,
       sleepHours: formData.sleepHours,
       sleepQuality: formData.sleepQuality,
