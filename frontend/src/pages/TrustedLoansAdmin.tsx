@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { motion } from "framer-motion";
 import { Users, FileText, Settings, Database, DollarSign, Activity } from "lucide-react";
 import Header from "@/components/Header";
+import { AggregationButton } from "@/components/AggregationButton";
 
 const TrustedLoansAdmin = () => {
   return (
@@ -81,22 +81,19 @@ const TrustedLoansAdmin = () => {
               <Settings className="w-5 h-5" />
               <span className="font-medium">Quick Actions</span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <button className="p-4 rounded-lg bg-white border border-[#0FA0CE] text-[#0FA0CE] font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
                 <Users className="w-5 h-5" />
                 Review Applications
               </button>
-              
+
               <button className="p-4 rounded-lg bg-white border border-[#0FA0CE] text-[#0FA0CE] font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
                 <FileText className="w-5 h-5" />
                 Generate Reports
               </button>
-              
-              <button className="p-4 rounded-lg bg-white border border-[#0FA0CE] text-[#0FA0CE] font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
-                <Database className="w-5 h-5" />
-                System Settings
-              </button>
+
+              <AggregationButton variant="trusted" companyId="trustedloans1" />
             </div>
           </motion.div>
         </div>

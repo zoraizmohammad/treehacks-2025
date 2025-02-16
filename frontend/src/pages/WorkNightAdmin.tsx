@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { motion } from "framer-motion";
 import { Users, FileText, Settings, Database } from "lucide-react";
 import Header from "@/components/Header";
+import { AggregationButton } from "@/components/AggregationButton";
 
 const WorkNightAdmin = () => {
   return (
@@ -105,22 +105,19 @@ const WorkNightAdmin = () => {
               </svg>
               <span className="font-medium">Quick Actions</span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <button className="p-4 rounded-lg bg-white border border-[#0066CC] text-[#0066CC] font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
                 <Users className="w-5 h-5" />
                 Export Applications
               </button>
-              
+
               <button className="p-4 rounded-lg bg-white border border-[#0066CC] text-[#0066CC] font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
                 <FileText className="w-5 h-5" />
                 Generate Report
               </button>
-              
-              <button className="p-4 rounded-lg bg-white border border-[#0066CC] text-[#0066CC] font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
-                <Settings className="w-5 h-5" />
-                System Settings
-              </button>
+
+              <AggregationButton variant="worknight" companyId="worknight1" />
             </div>
           </motion.div>
         </div>
