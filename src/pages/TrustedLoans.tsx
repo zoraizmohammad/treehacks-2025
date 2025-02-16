@@ -238,15 +238,17 @@ const TrustedLoans = () => {
           </div>
         </motion.div>
 
-        <style jsx global>{`
-          input, select {
-            color: #000000 !important;
-            background-color: #FFFFFF !important;
-          }
-          input::placeholder, select::placeholder {
-            color: #000000 !important;
-          }
-        `}</style>
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            input, select {
+              color: #000000 !important;
+              background-color: #FFFFFF !important;
+            }
+            input::placeholder, select::placeholder {
+              color: #000000 !important;
+            }
+          `
+        }} />
 
         <div className="bg-white shadow-lg rounded-lg p-8 border border-gray-200">
           {currentStep === 1 && (
