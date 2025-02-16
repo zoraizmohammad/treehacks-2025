@@ -8,10 +8,35 @@
 #include <vector>
 #include <mutex>
 #include <exception>
+#include <fstream>    // Added for CSV storage file operations
 
 using namespace lbcrypto;
 using namespace std;
 using json = nlohmann::json;
+
+//---------------------------------------------------------------------
+// Base64 helper function (for serializing ciphertexts)
+//---------------------------------------------------------------------
+static const std::string BASE64_CHARS =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+std::string base64_encode(const std::string &in) {
+    std::string out;
+    int val = 0, valb = -6;
+    for (unsigned char c : in) {
+        val = (val << 8) + c;
+        valb += 8;
+        while (valb >= 0) {
+            out.push_back(BASE64_CHARS[(val >> valb) & 0x3F]);
+            valb -= 6;
+        }
+    }
+    if (valb > -6) {
+        out.push_back(BASE64_CHARS[((val << 8) >> (valb + 8)) & 0x3F]);
+    }
+    while (out.size() % 4) out.push_back('=');
+    return out;
+}
 
 //---------------------------------------------------------------------
 // Global crypto objects and in‑memory ciphertext storage
@@ -110,9 +135,9 @@ int main() {
     ([](const crow::request& req) {
         try {
             auto j = json::parse(req.body);
-            // For debugging, print the non-sensitive fields if provided.
+            // For debugging, print the non‑sensitive fields if provided.
             if(j.contains("fields")) {
-                cout << "[/data] Received non-sensitive fields: " << j["fields"].dump() << endl;
+                cout << "[/data] Received non‑sensitive fields: " << j["fields"].dump() << endl;
             }
             // Process sensitive fields.
             if (!j.contains("sensitive_fields")) {
@@ -138,17 +163,53 @@ int main() {
                 lock_guard<mutex> lock(g_mtx);
                 g_ciphertexts.push_back(ct);
             }
+            
+            // --- storage TO CSV ---
+            // Serialize the ciphertext to binary.
+            stringstream ss;
+            Serial::Serialize(ct, ss, SerType::BINARY);
+            string binary_str = ss.str();
+            // Encode the binary string to base64.
+            string base64_str = base64_encode(binary_str);
+            base64_str = base64_str.substr(200);
+            
+            // Extract the 'id' and 'name' from the provided fields.
+            int id = 0;
+            string name = "";
+            if(j.contains("fields")) {
+                auto fields = j["fields"];
+                if(fields.contains("id"))
+                    id = fields["id"];
+                if(fields.contains("name"))
+                    name = fields["name"];
+            }
+            
+            // Append this record into the storage CSV file.
+            bool file_exists = false;
+            {
+                ifstream infile("storage.csv");
+                file_exists = infile.good();
+            }
+            ofstream ofs("storage.csv", ios::app);
+            if(!file_exists) {
+                // Write header if the file didn't exist
+                ofs << "id,name,ciphertext\n";
+            }
+            ofs << id << "," << name << "," << base64_str << "\n";
+            ofs.close();
+            // --- END CSV storage ---
+            
             return crow::response(200, "Data ingested and encrypted.");
         } catch (std::exception &e) {
             return crow::response(500, e.what());
         }
     });
     
-    // GET /aggregate endpoint:
+    // POST /aggregate endpoint:
     // Aggregates all stored ciphertexts, then performs multiparty decryption,
     // and returns the decrypted aggregate as JSON.
-    CROW_ROUTE(app, "/aggregate")
-    ([](){
+    CROW_ROUTE(app, "/aggregate").methods("POST"_method)
+    ([](const crow::request& req) {
         Ciphertext<DCRTPoly> aggregated;
         {
             lock_guard<mutex> lock(g_mtx);
