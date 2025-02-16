@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import { getSelfIdVector } from "@/constants/selfIdentificationVectors";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ApplicationFormData {
   personalInfo: {
@@ -111,66 +112,77 @@ const WorkNight = () => {
   const [formData, setFormData] = useState<ApplicationFormData>(initialFormData);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const totalSteps = 2;
   const progress = (currentStep / totalSteps) * 100;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Create My Information vector
-    const myInformationVector = {
-      firstName: formData.personalInfo.firstName,
-      lastName: formData.personalInfo.lastName,
-      email: formData.personalInfo.email,
-      phone: formData.personalInfo.phone,
-      address: formData.personalInfo.address,
-      city: formData.personalInfo.city,
-      state: formData.personalInfo.state,
-      zipCode: formData.personalInfo.zipCode,
-      university: formData.personalInfo.university,
-      major: formData.personalInfo.major,
-      graduationDate: formData.personalInfo.graduationDate,
-      hasResume: formData.personalInfo.resume !== null
-    };
+    try {
+      // Save personal information to Supabase
+      const { data, error } = await supabase
+        .from('job_applications')
+        .insert([
+          {
+            first_name: formData.personalInfo.firstName,
+            last_name: formData.personalInfo.lastName,
+            email: formData.personalInfo.email,
+            phone: formData.personalInfo.phone,
+            address: formData.personalInfo.address,
+            city: formData.personalInfo.city,
+            state: formData.personalInfo.state,
+            zip_code: formData.personalInfo.zipCode,
+            university: formData.personalInfo.university,
+            major: formData.personalInfo.major,
+            graduation_date: formData.personalInfo.graduationDate,
+            resume_path: null
+          }
+        ])
+        .select();
 
-    // Create Self Identification vector with original responses
-    const selfIdentificationVector = {
-      ageRange: formData.voluntaryDisclosure.ageRange,
-      disability: formData.voluntaryDisclosure.disability,
-      gender: formData.voluntaryDisclosure.gender,
-      ethnicity: formData.voluntaryDisclosure.ethnicity,
-      veteranStatus: formData.voluntaryDisclosure.veteranStatus
-    };
+      if (error) {
+        throw error;
+      }
 
-    // Create vectorized version of self identification responses
-    const vectorizedSelfIdData = {
-      ageRange: getSelfIdVector('ageRange', formData.voluntaryDisclosure.ageRange),
-      disability: getSelfIdVector('disability', formData.voluntaryDisclosure.disability),
-      gender: getSelfIdVector('gender', formData.voluntaryDisclosure.gender),
-      ethnicity: getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
-    };
+      // Create vectorized version of self identification responses (only for local use)
+      const vectorizedSelfIdData = {
+        ageRange: getSelfIdVector('ageRange', formData.voluntaryDisclosure.ageRange),
+        disability: getSelfIdVector('disability', formData.voluntaryDisclosure.disability),
+        gender: getSelfIdVector('gender', formData.voluntaryDisclosure.gender),
+        ethnicity: getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
+      };
 
-    // Create concatenated vector in specified order
-    const userRawOutputWork = [
-      ...getSelfIdVector('ageRange', formData.voluntaryDisclosure.ageRange),
-      ...getSelfIdVector('disability', formData.voluntaryDisclosure.disability),
-      ...getSelfIdVector('gender', formData.voluntaryDisclosure.gender),
-      ...getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
-    ];
+      // Create concatenated vector in specified order (only for local use)
+      const userRawOutputWork = [
+        ...getSelfIdVector('ageRange', formData.voluntaryDisclosure.ageRange),
+        ...getSelfIdVector('disability', formData.voluntaryDisclosure.disability),
+        ...getSelfIdVector('gender', formData.voluntaryDisclosure.gender),
+        ...getSelfIdVector('ethnicity', formData.voluntaryDisclosure.ethnicity)
+      ];
 
-    // Log vectors
-    console.log('My Information Vector:', myInformationVector);
-    console.log('Original Self Identification Vector:', selfIdentificationVector);
-    console.log('Vectorized Self Identification Data:', vectorizedSelfIdData);
-    console.log('Concatenated User Raw Output Work Vector:', userRawOutputWork);
+      // Log vectors (only for local use)
+      console.log('Vectorized Self Identification Data:', vectorizedSelfIdData);
+      console.log('Concatenated User Raw Output Work Vector:', userRawOutputWork);
 
-    toast({
-      title: "Application Submitted!",
-      description: "Your application has been received.",
-    });
-    setIsSubmitted(true);
+      toast({
+        title: "Application Submitted!",
+        description: "Your application has been received.",
+      });
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      toast({
+        title: "Error",
+        description: "There was a problem submitting your application. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
