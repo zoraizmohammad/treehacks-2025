@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import StatsCard from "@/components/worknight/StatsCard";
 import QuickActions from "@/components/worknight/QuickActions";
 import DemographicInsights from "@/components/worknight/DemographicInsights";
+import { AggregationButton } from "@/components/AggregationButton";
 
 interface LatestCandidate {
   id: string;
@@ -185,7 +186,7 @@ const WorkNightAdmin = () => {
                   <ChevronDown className="ml-auto w-5 h-5" />
                 )}
               </CollapsibleTrigger>
-              
+
               <CollapsibleContent className="mt-6 space-y-6">
                 {/* Latest Candidate Card */}
                 <Card>
