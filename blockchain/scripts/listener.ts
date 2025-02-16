@@ -8,9 +8,11 @@ dotenv.config();
 
 // Contract ABI - only including the events we need to listen for
 const CONTRACT_ABI = [
+    "event ValidationRequired(uint256 indexed requestId)",
     "event AggregationRequested(uint256 indexed requestId, address indexed requester, string aggregationType, uint256 dataCount, string dataSourceUrl, string companyId)",
     "event AggregationProcessed(uint256 indexed requestId)",
-    "function getAggregationRequest(uint256 requestId) view returns (address requester, string aggregationType, uint256 timestamp, bool isProcessed, uint256 dataCount, string dataSourceUrl, string companyId)",
+    "function getAggregationRequest(uint256 requestId) view returns (address requester, string aggregationType, uint256 timestamp, bool isProcessed, uint256 dataCount, string dataSourceUrl, string companyId, bool isValidated)",
+    "function validateAndApproveRequest(uint256 requestId, uint256 confirmedCount)",
     "function markRequestProcessed(uint256 requestId)"
 ];
 
@@ -116,9 +118,79 @@ class BlockchainListener {
         }
     }
 
+    async validateRequest(requestId: bigint) {
+        console.log(`\nValidating request ${requestId}...`);
+
+        // Get request details
+        const [requester, aggregationType, timestamp, isProcessed, dataCount, dataSourceUrl, companyId, isValidated] =
+            await this.contract.getAggregationRequest(requestId);
+
+        // Get actual record count from company API
+        try {
+            const countResponse = await axios.get(`${dataSourceUrl.split('/data')[0]}/count`);
+
+            if (countResponse.data.success) {
+                const actualCount = countResponse.data.recordCount;
+                console.log(`Claimed count: ${dataCount}, Actual count: ${actualCount}`);
+
+                if (actualCount >= 10) {
+                    console.log("Validating request on-chain...");
+                    const tx = await this.contract.validateAndApproveRequest(requestId, actualCount);
+                    await tx.wait();
+                    console.log("Request validated successfully");
+                } else {
+                    console.error("Validation failed: Insufficient records (minimum 10 required)");
+                }
+            }
+        } catch (error: any) {
+            console.error("Error validating request:", error.message);
+        }
+    }
+
+    async processRequest(
+        requestId: bigint,
+        requester: string,
+        aggregationType: string,
+        dataCount: bigint,
+        dataSourceUrl: string,
+        companyId: string
+    ) {
+        try {
+            console.log("Fetching data from company API...");
+            const encryptedData = await this.fetchCompanyData(dataSourceUrl, Number(dataCount));
+            console.log(`Retrieved ${encryptedData.length} encrypted records`);
+
+            console.log("Processing data...");
+            const result = await this.processLargeDataset(
+                requestId.toString(),
+                aggregationType,
+                encryptedData
+            );
+
+            console.log(`Final result: ${result}`);
+
+            console.log("Marking request as processed...");
+            const tx = await this.contract.markRequestProcessed(requestId);
+            await tx.wait();
+            console.log(`Request ${requestId} processed successfully`);
+        } catch (error: any) {
+            console.error(`Error processing request ${requestId}:`, error.message);
+            if (error.response) {
+                console.error("API Response:", error.response.data);
+            }
+        }
+    }
+
     async start() {
         console.log("Starting blockchain listener service...");
 
+        // Listen for ValidationRequired events
+        this.contract.on("ValidationRequired", async (requestId: bigint) => {
+            console.log(`\nValidation required for request ${requestId}`);
+            await this.validateRequest(requestId);
+        });
+
+        // Listen for AggregationRequested events (only emitted after validation)
         this.contract.on("AggregationRequested", async (
             requestId: bigint,
             requester: string,
@@ -127,41 +199,15 @@ class BlockchainListener {
             dataSourceUrl: string,
             companyId: string
         ) => {
-            console.log(`\nNew aggregation request detected:`);
-            console.log(`Request ID: ${requestId}`);
-            console.log(`Requester: ${requester}`);
-            console.log(`Type: ${aggregationType}`);
-            console.log(`Data count: ${dataCount}`);
-            console.log(`Data source: ${dataSourceUrl}`);
-            console.log(`Company ID: ${companyId}`);
-
-            try {
-                // Fetch data from company API
-                console.log("Fetching data from company API...");
-                const encryptedData = await this.fetchCompanyData(dataSourceUrl, Number(dataCount));
-                console.log(`Retrieved ${encryptedData.length} encrypted records`);
-
-                // Process the data
-                console.log("Processing data...");
-                const result = await this.processLargeDataset(
-                    requestId.toString(),
-                    aggregationType,
-                    encryptedData
-                );
-
-                console.log(`Final result: ${result}`);
-
-                // Mark the request as processed
-                console.log("Marking request as processed...");
-                const tx = await this.contract.markRequestProcessed(requestId);
-                await tx.wait();
-                console.log(`Request ${requestId} processed successfully`);
-            } catch (error: any) {
-                console.error(`Error processing request ${requestId}:`, error.message);
-                if (error.response) {
-                    console.error("API Response:", error.response.data);
-                }
-            }
+            console.log(`\nProcessing validated request ${requestId}`);
+            await this.processRequest(
+                requestId,
+                requester,
+                aggregationType,
+                dataCount,
+                dataSourceUrl,
+                companyId
+            );
         });
 
         // Listen for AggregationProcessed events

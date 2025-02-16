@@ -21,6 +21,7 @@ contract PrivateDataAggregator is Ownable, Pausable {
         uint256 dataCount;
         string dataSourceUrl;
         string companyId;
+        bool isValidated;
     }
     
     // Mapping to store aggregation requests
@@ -37,6 +38,7 @@ contract PrivateDataAggregator is Ownable, Pausable {
         string companyId
     );
     event AggregationProcessed(uint256 indexed requestId);
+    event ValidationRequired(uint256 indexed requestId);
     
     constructor() Ownable() {}
     
@@ -67,17 +69,12 @@ contract PrivateDataAggregator is Ownable, Pausable {
             isProcessed: false,
             dataCount: dataCount,
             dataSourceUrl: dataSourceUrl,
-            companyId: companyId
+            companyId: companyId,
+            isValidated: false
         });
 
-        emit AggregationRequested(
-            requestId,
-            msg.sender,
-            aggregationType,
-            dataCount,
-            dataSourceUrl,
-            companyId
-        );
+        // Emit validation required event
+        emit ValidationRequired(requestId);
 
         return requestId;
     }
@@ -92,6 +89,7 @@ contract PrivateDataAggregator is Ownable, Pausable {
      * @return dataCount Number of data rows in the request
      * @return dataSourceUrl URL to the data source
      * @return companyId ID of the company
+     * @return isValidated Whether the request has been validated
      */
     function getAggregationRequest(uint256 requestId)
         public
@@ -103,7 +101,8 @@ contract PrivateDataAggregator is Ownable, Pausable {
             bool isProcessed,
             uint256 dataCount,
             string memory dataSourceUrl,
-            string memory companyId
+            string memory companyId,
+            bool isValidated
         )
     {
         AggregationRequest storage request = aggregationRequests[requestId];
@@ -114,7 +113,8 @@ contract PrivateDataAggregator is Ownable, Pausable {
             request.isProcessed,
             request.dataCount,
             request.dataSourceUrl,
-            request.companyId
+            request.companyId,
+            request.isValidated
         );
     }
     
@@ -124,6 +124,8 @@ contract PrivateDataAggregator is Ownable, Pausable {
      */
     function markRequestProcessed(uint256 requestId) public {
         require(!aggregationRequests[requestId].isProcessed, "Request already processed");
+        require(aggregationRequests[requestId].isValidated, "Request not validated");
+        
         aggregationRequests[requestId].isProcessed = true;
         emit AggregationProcessed(requestId);
     }
@@ -140,5 +142,25 @@ contract PrivateDataAggregator is Ownable, Pausable {
      */
     function unpause() external onlyOwner {
         _unpause();
+    }
+
+    function validateAndApproveRequest(uint256 requestId, uint256 confirmedCount) public {
+        require(!aggregationRequests[requestId].isProcessed, "Request already processed");
+        require(!aggregationRequests[requestId].isValidated, "Request already validated");
+        require(confirmedCount >= 10, "Insufficient records confirmed");
+        
+        // Update the data count to the confirmed count
+        aggregationRequests[requestId].dataCount = confirmedCount;
+        aggregationRequests[requestId].isValidated = true;
+
+        // Only emit AggregationRequested after validation
+        emit AggregationRequested(
+            requestId,
+            aggregationRequests[requestId].requester,
+            aggregationRequests[requestId].aggregationType,
+            confirmedCount,
+            aggregationRequests[requestId].dataSourceUrl,
+            aggregationRequests[requestId].companyId
+        );
     }
 } 
