@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import Header from "@/components/Header";
 import { useToast } from "@/hooks/use-toast";
 import SecurityInfo from "@/components/SecurityInfo";
+import { getPersonalLoanData, generateUserRawOutputLoan } from "@/constants/loanVectorMappings";
 
 const initialFormData = {
   personal: {
@@ -138,6 +138,19 @@ const TrustedLoans = () => {
       });
       return;
     }
+
+    // Get raw personal loan data
+    const personalLoanData = getPersonalLoanData({
+      ...formData.personal,
+      ...formData.employment
+    });
+
+    // Generate demographic vector
+    const userRawOutputLoan = generateUserRawOutputLoan(formData.demographics);
+
+    // Output data to console
+    console.log('Personal & Loan Data:', personalLoanData);
+    console.log('User Raw Output Loan Vector:', userRawOutputLoan);
 
     setIsSubmitted(true);
   };
