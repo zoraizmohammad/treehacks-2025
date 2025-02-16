@@ -85,8 +85,8 @@ const CompanySignup = () => {
             <p className="text-sm text-gray-400 text-center mt-4">
               By registering, you agree to our Terms of Service and Privacy Policy
             </p>
-          </motion.div>
-        </form>
+          </form>
+        </motion.div>
       </div>
     </div>
   );
