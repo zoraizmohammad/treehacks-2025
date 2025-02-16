@@ -58,11 +58,40 @@ class BlockchainListener {
             }
         );
 
-        if (!response.data.success) {
-            throw new Error(`Processing failed: ${response.data.error}`);
+        console.log("Server response:", JSON.stringify(response.data, null, 2));
+
+        if (!response.data.decrypted || !Array.isArray(response.data.decrypted)) {
+            throw new Error(`Invalid response structure. Expected { decrypted: number[] }. Got: ${JSON.stringify(response.data)}`);
         }
 
-        return response.data.result;
+        const decryptedData: number[] = response.data.decrypted;
+        let result: number;
+
+        // Perform aggregation on decrypted data
+        switch (aggregationType.toLowerCase()) {
+            case 'sum':
+                result = decryptedData.reduce((a: number, b: number) => a + b, 0);
+                break;
+            case 'average':
+                result = decryptedData.reduce((a: number, b: number) => a + b, 0) / decryptedData.length;
+                break;
+            case 'count':
+                result = decryptedData.length;
+                break;
+            case 'median': {
+                const sorted = [...decryptedData].sort((a: number, b: number) => a - b);
+                const mid = Math.floor(sorted.length / 2);
+                result = sorted.length % 2 === 0
+                    ? (sorted[mid - 1] + sorted[mid]) / 2
+                    : sorted[mid];
+                break;
+            }
+            default:
+                throw new Error(`Unsupported aggregation type: ${aggregationType}`);
+        }
+
+        // Round to nearest integer since we're storing on-chain
+        return Math.round(result);
     }
 
     async validateRequest(requestId: bigint) {
