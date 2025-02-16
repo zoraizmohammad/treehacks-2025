@@ -4,6 +4,7 @@ import { Users, FileText, Settings } from "lucide-react";
 import Header from "@/components/Header";
 import { useLocation } from 'react-router-dom';
 import WorkNightAdmin from './WorkNightAdmin';
+import { AggregationButton } from "@/components/AggregationButton";
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -25,7 +26,7 @@ const AdminDashboard = () => {
             throw new Error(text || "Network response was not ok");
           });
         }
-        
+
         return response.json();
       })
       .then(data => {
@@ -166,25 +167,21 @@ const AdminDashboard = () => {
               </svg>
               <span className="font-medium">Quick Actions</span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <button className="p-4 rounded-lg bg-gradient-to-r from-[#F97316] to-[#0EA5E9] text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
                 <Users className="w-5 h-5" />
                 Export User Data
               </button>
-              
+
               <button className="p-4 rounded-lg bg-gradient-to-r from-[#F97316] to-[#0EA5E9] text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
                 <FileText className="w-5 h-5" />
                 Generate Report
               </button>
-              
-              <button className="p-4 rounded-lg bg-gradient-to-r from-[#F97316] to-[#0EA5E9] text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-                <Settings className="w-5 h-5" />
-                System Settings
-              </button>
+              <AggregationButton variant="mindful" companyId="mindful1" />
             </div>
             <div className="mt-4">
-              <button 
+              <button
                 onClick={fetchAggregateData}
                 className="p-2 rounded bg-blue-500 hover:bg-blue-600 transition"
               >
