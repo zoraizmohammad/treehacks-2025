@@ -12,17 +12,17 @@ const Index = () => {
   
   const features = [
     {
-      icon: <Shield className="w-6 h-6" />,
+      icon: <Shield className="w-6 h-6 text-white" />,
       title: "Secure & Private",
       description: "Advanced cryptographic protocols ensuring user privacy and data security",
     },
     {
-      icon: <Database className="w-6 h-6" />,
+      icon: <Database className="w-6 h-6 text-white" />,
       title: "Decentralized",
       description: "Distributed system architecture eliminating single points of failure",
     },
     {
-      icon: <Network className="w-6 h-6" />,
+      icon: <Network className="w-6 h-6 text-white" />,
       title: "Transparent",
       description: "Open-source algorithms with mathematical proofs of fairness",
     },
@@ -71,9 +71,9 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.2 }}
-                className="glass-card p-8 hover:transform hover:scale-105 transition-all duration-300"
+                className="glass-card p-8 hover:transform hover:scale-105 transition-all duration-300 text-center"
               >
-                <div className="mb-4 p-3 rounded-lg bg-teal-500/10 w-fit">
+                <div className="mb-4 p-3 rounded-lg bg-teal-500/10 w-fit mx-auto">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-white">
