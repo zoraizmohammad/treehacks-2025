@@ -80,12 +80,14 @@ const WorkflowSection = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-teal-200 to-cyan-200 bg-clip-text text-transparent text-shadow">
             How CipherShield Works
           </h2>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Our innovative system ensures complete privacy while enabling valuable insights
-          </p>
+          <div className="glass-card inline-block p-6">
+            <p className="text-lg text-gray-200">
+              Our innovative system ensures complete privacy while enabling valuable insights
+            </p>
+          </div>
         </motion.div>
 
         <motion.div
@@ -106,10 +108,10 @@ const WorkflowSection = () => {
                   {step.icon}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold mb-2 text-white">
+                  <h3 className="text-xl font-semibold mb-2 text-white text-shadow">
                     {step.title}
                   </h3>
-                  <p className="text-gray-300">
+                  <p className="text-gray-200">
                     {step.description}
                   </p>
                 </div>
@@ -133,8 +135,8 @@ const WorkflowSection = () => {
           <div className="glass-card p-8 inline-block">
             <div className="flex items-center gap-4 justify-center">
               <Shield className="w-8 h-8 text-teal-300" />
-              <p className="text-lg text-gray-300">
-                <span className="font-semibold text-white">Privacy Guarantee:</span>{" "}
+              <p className="text-lg text-gray-200">
+                <span className="font-semibold text-white text-shadow">Privacy Guarantee:</span>{" "}
                 Minimum of 10 records required for any statistical computation
               </p>
             </div>
