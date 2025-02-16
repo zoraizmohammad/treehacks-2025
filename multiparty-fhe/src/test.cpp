@@ -39,6 +39,31 @@ std::string base64_encode(const std::string &in) {
 }
 
 //---------------------------------------------------------------------
+// CORS Middleware: Allows all headers and methods.
+//---------------------------------------------------------------------
+struct CORSMiddleware {
+    struct context {};
+
+    void before_handle(crow::request& req, crow::response& res, context&) {
+        // Add CORS headers for all incoming requests
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+        res.add_header("Access-Control-Allow-Headers", "*");
+        // For OPTIONS preflight requests, immediately return a success response.
+        if (req.method == "OPTIONS"_method) {
+            res.end();
+        }
+    }
+
+    void after_handle(crow::request& req, crow::response& res, context&) {
+        // Ensure CORS headers are present in the response even if the response is generated early or is an error.
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+        res.add_header("Access-Control-Allow-Headers", "*");
+    }
+};
+
+//---------------------------------------------------------------------
 // Global crypto objects and in‑memory ciphertext storage
 //---------------------------------------------------------------------
 CryptoContext<DCRTPoly> cc;
@@ -123,7 +148,8 @@ int main() {
     // Initialize crypto and keys.
     initCrypto();
     
-    crow::SimpleApp app;
+    // Use our custom CORS middleware by specifying it in the app type.
+    crow::App<CORSMiddleware> app;
     
     // POST /data endpoint:
     // Accepts a JSON payload of the form:

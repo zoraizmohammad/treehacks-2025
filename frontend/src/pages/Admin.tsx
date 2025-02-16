@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { motion } from "framer-motion";
-import { Users, FileText, Settings, Database } from "lucide-react";
+import { Users, FileText, Settings } from "lucide-react";
 import Header from "@/components/Header";
 import { useLocation } from 'react-router-dom';
 import WorkNightAdmin from './WorkNightAdmin';
@@ -9,6 +8,47 @@ import WorkNightAdmin from './WorkNightAdmin';
 const AdminDashboard = () => {
   const location = useLocation();
   const isWorkNight = location.pathname.includes('worknight');
+
+  // State to store aggregate data
+  const [aggregateData, setAggregateData] = React.useState<number[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // Function to fetch aggregate data (decrypted vector) from the API endpoint
+  const fetchAggregateData = () => {
+    setLoading(true);
+    setError(null);
+    fetch("http://localhost:18080/aggregate", { method: "POST" })
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => {
+            throw new Error(text || "Network response was not ok");
+          });
+        }
+        
+        return response.json();
+      })
+      .then(data => {
+        // Check if the API returned the decrypted vector
+        console.log(data);
+        if (data.decrypted) {
+          setAggregateData(data.decrypted);
+        } else {
+          setAggregateData([]);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching aggregate data:", err);
+        setError(err.message);
+        setLoading(false);
+      });
+  };
+
+  // Fetch once when the component mounts
+  React.useEffect(() => {
+    fetchAggregateData();
+  }, []);
 
   if (isWorkNight) {
     return <WorkNightAdmin />;
@@ -142,6 +182,39 @@ const AdminDashboard = () => {
                 <Settings className="w-5 h-5" />
                 System Settings
               </button>
+            </div>
+            <div className="mt-4">
+              <button 
+                onClick={fetchAggregateData}
+                className="p-2 rounded bg-blue-500 hover:bg-blue-600 transition"
+              >
+                Refresh Aggregate Data
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Aggregate Data Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="glass-card p-6 mt-6"
+          >
+            <div className="flex items-center gap-3 text-[#0EA5E9] mb-4">
+              <span className="font-medium text-xl">Aggregate Data Result</span>
+            </div>
+            <div>
+              {loading ? (
+                <div className="text-gray-400">Loading...</div>
+              ) : error ? (
+                <div className="text-red-500">{error}</div>
+              ) : aggregateData.length > 0 ? (
+                <div className="text-lg text-gray-200">
+                  {aggregateData.join(", ")}
+                </div>
+              ) : (
+                <div className="text-gray-400">No aggregate data available.</div>
+              )}
             </div>
           </motion.div>
         </div>
