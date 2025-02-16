@@ -48,8 +48,7 @@ const Index = () => {
               Making discrimination mathematically impossible
             </p>
             <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-12">
-              Our innovative Web3 protocol ensures complete fairness through mathematical principles,
-              creating a truly equitable digital ecosystem.
+              Our innovative Web3 protocol ensures complete security, privacy, and trust through mathematical principles
             </p>
             <Button 
               className="bg-teal-500 hover:bg-teal-600 text-white rounded-full px-8 py-6 text-lg transition-all duration-300 transform hover:scale-105"
