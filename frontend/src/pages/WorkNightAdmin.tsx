@@ -35,6 +35,7 @@ const WorkNightAdmin = () => {
   const [totalApplications, setTotalApplications] = useState(0);
   const [aggregateError, setAggregateError] = useState<string | null>(null);
   const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
+  const [systemStatus, setSystemStatus] = useState({ status: "Operational", lastCheck: "Just now" });
   const defaultAggregateData = Array(18).fill(0);
 
   useEffect(() => {
@@ -51,9 +52,6 @@ const WorkNightAdmin = () => {
       .then((data) => {
         if (data.decrypted && Array.isArray(data.decrypted)) {
           setAggregateData(data.decrypted);
-          // Calculate total applications from first 6 values (age groups)
-          const total = data.decrypted.slice(0, 6).reduce((acc: number, val: number) => acc + val, 0);
-          setTotalApplications(total);
         } else {
           setAggregateData(defaultAggregateData);
         }
@@ -106,29 +104,70 @@ const WorkNightAdmin = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        // Holesky Etherscan API endpoint
-        const response = await fetch(`https://api-holesky.etherscan.io/api?module=account&action=txlist&address=0xBE384aa1b5a393f79A1dfe5aa6cFD96aF7250867&page=1&offset=1&sort=desc&apikey=KBENR239TJX9PM81K6HTHS6GX1V3AP716H`);
+        // Fetch all transactions (increased offset to get total count)
+        const response = await fetch(`https://api-holesky.etherscan.io/api?module=account&action=txlist&address=0xBE384aa1b5a393f79A1dfe5aa6cFD96aF7250867&page=1&offset=100&sort=desc&apikey=KBENR239TJX9PM81K6HTHS6GX1V3AP716H`);
         const data = await response.json();
         
         if (data.status === "1" && data.result.length > 0) {
           const transactions = data.result.map((tx: any) => ({
             hash: tx.hash,
             timestamp: new Date(parseInt(tx.timeStamp) * 1000).toLocaleString(),
+            timeMs: parseInt(tx.timeStamp) * 1000,
             from: tx.from,
             to: tx.to,
             value: `${(parseInt(tx.value) / 1e18).toFixed(4)} ETH`,
             status: tx.isError === "0" ? "Success" : "Failed"
           }));
+
+          // Update total applications with total transaction count
+          setTotalApplications(transactions.length);
+
+          // Update recent transactions
           setRecentTransactions(transactions);
+
+          // Check system status based on last 5 transactions
+          const last5Transactions = transactions.slice(0, 5);
+          const allSuccessful = last5Transactions.every(tx => tx.status === "Success");
+          
+          // Calculate time since last transaction
+          const lastTransactionTime = transactions[0].timeMs;
+          const currentTime = Date.now();
+          const timeDiff = currentTime - lastTransactionTime;
+          
+          // Format time difference
+          let lastCheck;
+          if (timeDiff < 60000) { // less than 1 minute
+            lastCheck = 'Just now';
+          } else if (timeDiff < 3600000) { // less than 1 hour
+            const minutes = Math.floor(timeDiff / 60000);
+            lastCheck = `${minutes}m ago`;
+          } else if (timeDiff < 86400000) { // less than 1 day
+            const hours = Math.floor(timeDiff / 3600000);
+            lastCheck = `${hours}h ago`;
+          } else {
+            const days = Math.floor(timeDiff / 86400000);
+            lastCheck = `${days}d ago`;
+          }
+
+          setSystemStatus({
+            status: allSuccessful ? "Operational" : "Degraded",
+            lastCheck
+          });
         }
       } catch (error) {
         console.error("Error fetching transactions:", error);
-        // Fallback to empty array if there's an error
+        setSystemStatus({
+          status: "Error",
+          lastCheck: "Check failed"
+        });
         setRecentTransactions([]);
       }
     };
 
     fetchTransactions();
+    // Refresh every 5 minutes
+    const interval = setInterval(fetchTransactions, 300000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -149,9 +188,9 @@ const WorkNightAdmin = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <StatsCard
               icon={Users}
-              title="Total Applications"
+              title="Total Transactions"
               value={totalApplications}
-              subtext="+8% from last week"
+              subtext="On Holesky Testnet"
               subtextColor="text-green-600"
               delay={0.1}
             />
@@ -165,10 +204,10 @@ const WorkNightAdmin = () => {
             <StatsCard
               icon={Database}
               title="System Status"
-              value="Operational"
-              subtext="Last check: 5m ago"
+              value={systemStatus.status}
+              subtext={`Last check: ${systemStatus.lastCheck}`}
               delay={0.3}
-              type="status"
+              type={systemStatus.status.toLowerCase()}
             />
           </div>
 
