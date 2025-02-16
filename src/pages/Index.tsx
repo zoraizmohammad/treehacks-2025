@@ -90,6 +90,16 @@ const Index = () => {
       writtenResponses: formData.writtenResponses
     };
 
+    // Create concatenated vector in specified order
+    const userRawOutputMed = [
+      ...getResponseVector('chronicPain', formData.chronicPain),
+      ...getResponseVector('dietaryBalance', formData.dietaryBalance),
+      ...getResponseVector('generalHealth', formData.generalHealth),
+      ...getResponseVector('mentalHealth', formData.mentalHealth),
+      ...getResponseVector('mindfulnessPractices', formData.mindfulnessPractices),
+      ...getResponseVector('screenTimeImpact', formData.screenTimeImpact)
+    ];
+
     const publicKey = "pk_demo123";
     const encryptedBasicData = encryptData(basicHealthVector, publicKey);
     const encryptedAdditionalData = encryptData(additionalHealthVector, publicKey);
@@ -97,6 +107,7 @@ const Index = () => {
     console.log('Basic Health Information Vector:', basicHealthVector);
     console.log('Original Additional Health Information:', additionalHealthVector);
     console.log('Vectorized Additional Health Information:', localVectorizedData);
+    console.log('Concatenated User Raw Output Med Vector:', userRawOutputMed);
 
     toast({
       title: "Response Submitted Securely!",
