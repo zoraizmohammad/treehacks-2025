@@ -2,6 +2,28 @@ import React, { useState } from 'react';
 import { Database } from "lucide-react";
 import { ethers } from 'ethers';
 
+// Add these type declarations at the top of the file
+interface RequestArguments {
+    method: string;
+    params?: unknown[];
+}
+
+type EventHandler = (...args: unknown[]) => void;
+
+interface EthereumProvider {
+    request: (args: RequestArguments) => Promise<unknown>;
+    on: (eventName: string, handler: EventHandler) => void;
+    removeListener: (eventName: string, handler: EventHandler) => void;
+    selectedAddress: string | null;
+    isMetaMask?: boolean;
+}
+
+declare global {
+    interface Window {
+        ethereum: EthereumProvider;
+    }
+}
+
 // Contract configuration
 const CONTRACT_ADDRESS = "0xce870197F1fa98dC26333CAE3c16272c909A5Ce5";
 const CONTRACT_ABI = [
@@ -159,9 +181,10 @@ export const AggregationButton: React.FC<AggregationButtonProps> = ({ variant, c
                     }
                 );
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error:', error);
-            updateStatus(`Error: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            updateStatus(`Error: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
