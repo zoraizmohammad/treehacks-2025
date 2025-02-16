@@ -6,6 +6,7 @@ import BasicHealthInfo from "@/components/health-form/BasicHealthInfo";
 import AdditionalHealthInfo from "@/components/health-form/AdditionalHealthInfo";
 import SecurityInfo from "@/components/health-form/SecurityInfo";
 import { HealthFormData } from "@/types/form";
+import { getResponseVector } from "@/constants/vectorMappings";
 
 const encryptData = (data: any, publicKey: string) => {
   return JSON.stringify(data) + `_encrypted_with_${publicKey}`;
@@ -59,7 +60,7 @@ const Index = () => {
       bloodType: formData.bloodType
     };
 
-    // Create Additional Health Information vector
+    // Create Additional Health Information vector with original responses
     const additionalHealthVector = {
       exerciseFrequency: formData.exerciseFrequency,
       sleepHours: formData.sleepHours,
@@ -74,12 +75,28 @@ const Index = () => {
       writtenResponses: formData.writtenResponses
     };
 
+    // Create vectorized version of the additional health information
+    const localVectorizedData = {
+      exerciseFrequency: formData.exerciseFrequency,
+      sleepHours: formData.sleepHours,
+      sleepQuality: formData.sleepQuality,
+      energyLevels: formData.energyLevels,
+      dietaryBalance: getResponseVector('dietaryBalance', formData.dietaryBalance),
+      mentalHealth: getResponseVector('mentalHealth', formData.mentalHealth),
+      generalHealth: getResponseVector('generalHealth', formData.generalHealth),
+      chronicPain: getResponseVector('chronicPain', formData.chronicPain),
+      screenTimeImpact: getResponseVector('screenTimeImpact', formData.screenTimeImpact),
+      mindfulnessPractices: getResponseVector('mindfulnessPractices', formData.mindfulnessPractices),
+      writtenResponses: formData.writtenResponses
+    };
+
     const publicKey = "pk_demo123";
     const encryptedBasicData = encryptData(basicHealthVector, publicKey);
     const encryptedAdditionalData = encryptData(additionalHealthVector, publicKey);
     
     console.log('Basic Health Information Vector:', basicHealthVector);
-    console.log('Additional Health Information Vector:', additionalHealthVector);
+    console.log('Original Additional Health Information:', additionalHealthVector);
+    console.log('Vectorized Additional Health Information:', localVectorizedData);
 
     toast({
       title: "Response Submitted Securely!",
