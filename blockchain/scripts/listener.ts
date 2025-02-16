@@ -159,15 +159,52 @@ class BlockchainListener {
             console.log(`Final result: ${result}`);
 
             console.log("Marking request as processed and storing result on-chain...");
-            const tx = await this.contract.markRequestProcessed(requestId, result);
+            const tx = await this.contract.markRequestProcessed(
+                requestId,
+                result,
+                {
+                    gasLimit: 1000000,
+                    maxFeePerGas: ethers.utils.parseUnits("100", "gwei"),
+                    maxPriorityFeePerGas: ethers.utils.parseUnits("2", "gwei")
+                }
+            );
             await tx.wait();
             console.log(`Request ${requestId} processed successfully with result ${result}`);
         } catch (error: any) {
             console.error(`Error processing request ${requestId}:`, error.message);
+
+            // Log detailed transaction information
+            if (error.transaction) {
+                console.error("Transaction details:", {
+                    from: error.transaction.from,
+                    to: error.transaction.to,
+                    data: error.transaction.data,
+                });
+            }
+
+            // Log provider error details
+            if (error.error) {
+                console.error("Provider error:", {
+                    name: error.error.name,
+                    code: error.error.code,
+                    message: error.error.message,
+                });
+            }
+
             if (error.response) {
                 console.error("API Response:", error.response.data);
             }
-            // Log the full error object for debugging
+
+            // Try to decode the revert reason if available
+            try {
+                if (error.error && error.error.data) {
+                    const reason = ethers.utils.toUtf8String('0x' + error.error.data.slice(138));
+                    console.error("Revert reason:", reason);
+                }
+            } catch (decodeError) {
+                console.error("Could not decode revert reason");
+            }
+
             console.error("Full error:", error);
         }
     }
