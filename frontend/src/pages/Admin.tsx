@@ -1,125 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from "framer-motion";
-import { Users, FileText, Settings, Database } from "lucide-react";
+import { Users, FileText, Database } from "lucide-react";
 import Header from "@/components/Header";
 import { useLocation } from 'react-router-dom';
 import WorkNightAdmin from './WorkNightAdmin';
-import { ethers } from 'ethers';
 import { AggregationButton } from "@/components/AggregationButton";
 
 const AdminDashboard = () => {
   const location = useLocation();
   const isWorkNight = location.pathname.includes('worknight');
-  const [loading, setLoading] = useState(false);
-  const [requestId, setRequestId] = useState<string | null>(null);
-  const [status, setStatus] = useState<string>('');
-  const [result, setResult] = useState<string | null>(null);
-
-  const updateStatus = (message: string) => {
-    console.log(message);
-    setStatus(message);
-  };
-
-  const requestAggregation = async () => {
-    try {
-      setLoading(true);
-      setStatus('');
-      setResult(null);
-
-      updateStatus("Connecting to MetaMask...");
-      if (!window.ethereum) {
-        throw new Error("Please install MetaMask!");
-      }
-
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-
-      updateStatus("Initializing contract...");
-      const contract = new ethers.Contract(
-        CONTRACT_ADDRESS,
-        CONTRACT_ABI,
-        signer
-      );
-
-      // Step 1: Initialize company data
-      updateStatus("Initializing company data...");
-      const initResponse = await fetch(`${COMPANY_API_URL}/init-data`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyId: COMPANY_ID, recordCount: RECORD_COUNT })
-      });
-
-      if (!initResponse.ok) {
-        throw new Error('Failed to initialize company data');
-      }
-      const initData = await initResponse.json();
-      console.log("Company data initialized:", initData);
-
-      // Step 2: Verify record count
-      updateStatus("Verifying record count...");
-      const countResponse = await fetch(`${COMPANY_API_URL}/${COMPANY_ID}/count`);
-      if (!countResponse.ok) {
-        throw new Error('Failed to verify record count');
-      }
-      const countData = await countResponse.json();
-      console.log("Record count verified:", countData);
-
-      // Step 3: Submit request
-      updateStatus("Submitting request to blockchain...");
-      const tx = await contract.requestAggregation(
-        "average",
-        `${COMPANY_API_URL}/${COMPANY_ID}/data`,
-        COMPANY_ID,
-        countData.recordCount,
-        {
-          gasLimit: 1000000,
-        }
-      );
-
-      updateStatus("Waiting for transaction confirmation...");
-      const receipt = await tx.wait();
-      console.log("Transaction receipt:", receipt);
-
-      const event = receipt.events?.find(e => e.event === "ValidationRequired");
-
-      if (event) {
-        const newRequestId = event.args?.[0].toString();
-        setRequestId(newRequestId);
-        updateStatus(`Request created with ID: ${newRequestId}`);
-        console.log("Request ID:", newRequestId);
-
-        // Step 4: Wait for processing
-        updateStatus("Waiting for request processing...");
-
-        // Listen for the AggregationProcessed event
-        contract.once("AggregationProcessed",
-          async (processedRequestId, processedResult) => {
-            if (processedRequestId.toString() === newRequestId) {
-              console.log("Received result:", processedResult.toString());
-              setResult(processedResult.toString());
-
-              // Get final request details
-              const [, , , isProcessed, , , , isValidated, finalResult] =
-                await contract.getAggregationRequest(newRequestId);
-
-              updateStatus(`Request processed! Result: ${finalResult.toString()}`);
-              console.log("Final request state:", {
-                isProcessed,
-                isValidated,
-                result: finalResult.toString()
-              });
-            }
-          }
-        );
-      }
-    } catch (error: any) {
-      console.error('Error:', error);
-      updateStatus(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (isWorkNight) {
     return <WorkNightAdmin />;
@@ -251,21 +140,6 @@ const AdminDashboard = () => {
 
               <AggregationButton variant="mindful" companyId="mindful1" />
             </div>
-
-            {/* Status and Result Display */}
-            {(status || requestId || result) && (
-              <div className="mt-4 p-4 bg-gray-800 rounded-lg space-y-2">
-                {status && (
-                  <p className="text-blue-400">{status}</p>
-                )}
-                {requestId && (
-                  <p className="text-sm text-gray-400">Request ID: {requestId}</p>
-                )}
-                {result && (
-                  <p className="text-green-400">Final Result: {result}</p>
-                )}
-              </div>
-            )}
           </motion.div>
         </div>
       </div>
