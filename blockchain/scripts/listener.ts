@@ -132,6 +132,19 @@ class BlockchainListener {
         companyId: string
     ) {
         try {
+            // First check if request is valid and not already processed
+            const [, , , isProcessed, , , , isValidated] = await this.contract.getAggregationRequest(requestId);
+
+            if (isProcessed) {
+                console.log(`Request ${requestId} has already been processed`);
+                return;
+            }
+
+            if (!isValidated) {
+                console.log(`Request ${requestId} has not been validated yet`);
+                return;
+            }
+
             console.log("Fetching data from company API...");
             const encryptedData = await this.fetchCompanyData(dataSourceUrl, Number(dataCount));
             console.log(`Retrieved ${encryptedData.length} encrypted records`);
@@ -154,6 +167,8 @@ class BlockchainListener {
             if (error.response) {
                 console.error("API Response:", error.response.data);
             }
+            // Log the full error object for debugging
+            console.error("Full error:", error);
         }
     }
 
