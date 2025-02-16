@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -48,9 +47,40 @@ const Index = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const publicKey = "pk_demo123";
-    const encryptedData = encryptData(formData, publicKey);
     
+    // Create Basic Health Information vector
+    const basicHealthVector = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      age: formData.age,
+      height: formData.height,
+      weight: formData.weight,
+      bloodType: formData.bloodType
+    };
+
+    // Create Additional Health Information vector
+    const additionalHealthVector = {
+      exerciseFrequency: formData.exerciseFrequency,
+      sleepHours: formData.sleepHours,
+      sleepQuality: formData.sleepQuality,
+      dietaryBalance: formData.dietaryBalance,
+      mentalHealth: formData.mentalHealth,
+      energyLevels: formData.energyLevels,
+      generalHealth: formData.generalHealth,
+      chronicPain: formData.chronicPain,
+      screenTimeImpact: formData.screenTimeImpact,
+      mindfulnessPractices: formData.mindfulnessPractices,
+      writtenResponses: formData.writtenResponses
+    };
+
+    const publicKey = "pk_demo123";
+    const encryptedBasicData = encryptData(basicHealthVector, publicKey);
+    const encryptedAdditionalData = encryptData(additionalHealthVector, publicKey);
+    
+    console.log('Basic Health Information Vector:', basicHealthVector);
+    console.log('Additional Health Information Vector:', additionalHealthVector);
+
     toast({
       title: "Response Submitted Securely!",
       description: "Your data has been encrypted and sent.",
