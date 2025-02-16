@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 222 47% 11%;
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -34,15 +34,11 @@
   }
 
   body {
-    @apply bg-[#141821] text-foreground font-inter antialiased;
+    @apply bg-background text-foreground font-inter antialiased;
   }
 
   .glass-card {
-    @apply bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl;
-  }
-
-  .text-shadow {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    @apply bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 rounded-xl;
   }
 
   .animate-fade-in {
