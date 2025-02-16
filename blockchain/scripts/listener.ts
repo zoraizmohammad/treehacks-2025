@@ -133,7 +133,20 @@ class BlockchainListener {
     ) {
         try {
             // First check if request is valid and not already processed
-            const [, , , isProcessed, , , , isValidated] = await this.contract.getAggregationRequest(requestId);
+            const [req_requester, req_type, req_timestamp, isProcessed, req_count, req_url, req_companyId, isValidated] =
+                await this.contract.getAggregationRequest(requestId);
+
+            console.log("Request state:", {
+                requestId: requestId.toString(),
+                requester: req_requester,
+                aggregationType: req_type,
+                timestamp: new Date(Number(req_timestamp) * 1000).toISOString(),
+                isProcessed,
+                dataCount: req_count.toString(),
+                dataSourceUrl: req_url,
+                companyId: req_companyId,
+                isValidated
+            });
 
             if (isProcessed) {
                 console.log(`Request ${requestId} has already been processed`);
