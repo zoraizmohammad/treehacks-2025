@@ -5,8 +5,11 @@ import WorkflowSection from "@/components/WorkflowSection";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Shield, Database, Network } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   const features = [
     {
       icon: <Shield className="w-6 h-6" />,
@@ -48,8 +51,11 @@ const Index = () => {
               Our innovative Web3 protocol ensures complete fairness through mathematical principles,
               creating a truly equitable digital ecosystem.
             </p>
-            <Button className="bg-teal-500 hover:bg-teal-600 text-white rounded-full px-8 py-6 text-lg transition-all duration-300 transform hover:scale-105">
-              Learn More <ArrowRight className="ml-2 h-5 w-5" />
+            <Button 
+              className="bg-teal-500 hover:bg-teal-600 text-white rounded-full px-8 py-6 text-lg transition-all duration-300 transform hover:scale-105"
+              onClick={() => navigate('/company-signup')}
+            >
+              Companies Sign up Here <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </motion.div>
         </div>
