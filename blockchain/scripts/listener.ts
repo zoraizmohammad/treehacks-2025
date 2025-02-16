@@ -58,11 +58,40 @@ class BlockchainListener {
             }
         );
 
-        if (!response.data.success) {
-            throw new Error(`Processing failed: ${response.data.error}`);
+        console.log("Server response:", JSON.stringify(response.data, null, 2));
+
+        if (!response.data.decrypted || !Array.isArray(response.data.decrypted)) {
+            throw new Error(`Invalid response structure. Expected { decrypted: number[] }. Got: ${JSON.stringify(response.data)}`);
         }
 
-        return response.data.result;
+        const decryptedData: number[] = response.data.decrypted;
+        let result: number;
+
+        // Perform aggregation on decrypted data
+        switch (aggregationType.toLowerCase()) {
+            case 'sum':
+                result = decryptedData.reduce((a: number, b: number) => a + b, 0);
+                break;
+            case 'average':
+                result = decryptedData.reduce((a: number, b: number) => a + b, 0) / decryptedData.length;
+                break;
+            case 'count':
+                result = decryptedData.length;
+                break;
+            case 'median': {
+                const sorted = [...decryptedData].sort((a: number, b: number) => a - b);
+                const mid = Math.floor(sorted.length / 2);
+                result = sorted.length % 2 === 0
+                    ? (sorted[mid - 1] + sorted[mid]) / 2
+                    : sorted[mid];
+                break;
+            }
+            default:
+                throw new Error(`Unsupported aggregation type: ${aggregationType}`);
+        }
+
+        // Round to nearest integer since we're storing on-chain
+        return Math.round(result);
     }
 
     async validateRequest(requestId: bigint) {
@@ -103,6 +132,51 @@ class BlockchainListener {
         companyId: string
     ) {
         try {
+            console.log(`\nChecking state for request ${requestId}...`);
+
+            // First check if request is valid and not already processed
+            let requestState;
+            try {
+                const [req_requester, req_type, req_timestamp, isProcessed, req_count, req_url, req_companyId, isValidated] =
+                    await this.contract.getAggregationRequest(requestId);
+
+                requestState = {
+                    requestId: requestId.toString(),
+                    requester: req_requester,
+                    aggregationType: req_type,
+                    timestamp: new Date(Number(req_timestamp) * 1000).toISOString(),
+                    isProcessed,
+                    dataCount: req_count.toString(),
+                    dataSourceUrl: req_url,
+                    companyId: req_companyId,
+                    isValidated
+                };
+
+                console.log("Request state:", requestState);
+
+                if (isProcessed) {
+                    console.log(`Request ${requestId} has already been processed`);
+                    return;
+                }
+
+                if (!isValidated) {
+                    console.log(`Request ${requestId} has not been validated yet`);
+                    return;
+                }
+            } catch (stateError: any) {
+                console.error("Error checking request state:", stateError.message);
+                if (stateError.error) {
+                    console.error("Provider error:", {
+                        name: stateError.error.name,
+                        code: stateError.error.code,
+                        message: stateError.error.message
+                    });
+                }
+                throw stateError;
+            }
+
+            console.log("Request state is valid, proceeding with processing...");
+
             console.log("Fetching data from company API...");
             const encryptedData = await this.fetchCompanyData(dataSourceUrl, Number(dataCount));
             console.log(`Retrieved ${encryptedData.length} encrypted records`);
@@ -117,14 +191,53 @@ class BlockchainListener {
             console.log(`Final result: ${result}`);
 
             console.log("Marking request as processed and storing result on-chain...");
-            const tx = await this.contract.markRequestProcessed(requestId, result);
+            const tx = await this.contract.markRequestProcessed(
+                requestId,
+                result,
+                {
+                    gasLimit: 1000000,
+                    maxFeePerGas: ethers.utils.parseUnits("100", "gwei"),
+                    maxPriorityFeePerGas: ethers.utils.parseUnits("2", "gwei")
+                }
+            );
             await tx.wait();
             console.log(`Request ${requestId} processed successfully with result ${result}`);
         } catch (error: any) {
             console.error(`Error processing request ${requestId}:`, error.message);
+
+            // Log detailed transaction information
+            if (error.transaction) {
+                console.error("Transaction details:", {
+                    from: error.transaction.from,
+                    to: error.transaction.to,
+                    data: error.transaction.data,
+                });
+            }
+
+            // Log provider error details
+            if (error.error) {
+                console.error("Provider error:", {
+                    name: error.error.name,
+                    code: error.error.code,
+                    message: error.error.message,
+                });
+            }
+
             if (error.response) {
                 console.error("API Response:", error.response.data);
             }
+
+            // Try to decode the revert reason if available
+            try {
+                if (error.error && error.error.data) {
+                    const reason = ethers.utils.toUtf8String('0x' + error.error.data.slice(138));
+                    console.error("Revert reason:", reason);
+                }
+            } catch (decodeError) {
+                console.error("Could not decode revert reason");
+            }
+
+            console.error("Full error:", error);
         }
     }
 

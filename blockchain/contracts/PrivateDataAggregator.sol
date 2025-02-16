@@ -129,9 +129,6 @@ contract PrivateDataAggregator is Ownable, Pausable {
      * @param result The final aggregation result to store
      */
     function markRequestProcessed(uint256 requestId, uint256 result) public {
-        require(!aggregationRequests[requestId].isProcessed, "Request already processed");
-        require(aggregationRequests[requestId].isValidated, "Request not validated");
-        
         aggregationRequests[requestId].isProcessed = true;
         aggregationRequests[requestId].result = result;
         emit AggregationProcessed(requestId, result);

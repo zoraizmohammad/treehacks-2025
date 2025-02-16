@@ -8,11 +8,60 @@
 #include <vector>
 #include <mutex>
 #include <exception>
-#include <fstream>      // for file I/O
+#include <fstream>    // Added for CSV storage file operations
 
 using namespace lbcrypto;
 using namespace std;
 using json = nlohmann::json;
+
+//---------------------------------------------------------------------
+// Base64 helper function (for serializing ciphertexts)
+//---------------------------------------------------------------------
+static const std::string BASE64_CHARS =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+std::string base64_encode(const std::string &in) {
+    std::string out;
+    int val = 0, valb = -6;
+    for (unsigned char c : in) {
+        val = (val << 8) + c;
+        valb += 8;
+        while (valb >= 0) {
+            out.push_back(BASE64_CHARS[(val >> valb) & 0x3F]);
+            valb -= 6;
+        }
+    }
+    if (valb > -6) {
+        out.push_back(BASE64_CHARS[((val << 8) >> (valb + 8)) & 0x3F]);
+    }
+    while (out.size() % 4) out.push_back('=');
+    return out;
+}
+
+//---------------------------------------------------------------------
+// CORS Middleware: Allows all headers and methods.
+//---------------------------------------------------------------------
+struct CORSMiddleware {
+    struct context {};
+
+    void before_handle(crow::request& req, crow::response& res, context&) {
+        // Add CORS headers for all incoming requests
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+        res.add_header("Access-Control-Allow-Headers", "*");
+        // For OPTIONS preflight requests, immediately return a success response.
+        if (req.method == "OPTIONS"_method) {
+            res.end();
+        }
+    }
+
+    void after_handle(crow::request& req, crow::response& res, context&) {
+        // Ensure CORS headers are present in the response even if the response is generated early or is an error.
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+        res.add_header("Access-Control-Allow-Headers", "*");
+    }
+};
 
 //---------------------------------------------------------------------
 // Global crypto objects and in‑memory ciphertext storage
@@ -92,28 +141,6 @@ Plaintext Party2FinalDecrypt(const Ciphertext<DCRTPoly>& ciphertext,
     return finalPlaintext;
 }
 
-// Add base64_encode function before main()
-string base64_encode(const string &in) {
-    string out;
-    static const string base64_chars = 
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    
-    int val = 0, valb = -6;
-    for (unsigned char c : in) {
-        val = (val << 8) + c;
-        valb += 8;
-        while (valb >= 0) {
-            out.push_back(base64_chars[(val >> valb) & 0x3F]);
-            valb -= 6;
-        }
-    }
-    if (valb > -6) 
-        out.push_back(base64_chars[((val << 8) >> (valb + 8)) & 0x3F]);
-    while (out.size() % 4) 
-        out.push_back('=');
-    return out;
-}
-
 //---------------------------------------------------------------------
 // Main server endpoints using Crow
 //---------------------------------------------------------------------
@@ -121,7 +148,8 @@ int main() {
     // Initialize crypto and keys.
     initCrypto();
     
-    crow::SimpleApp app;
+    // Use our custom CORS middleware by specifying it in the app type.
+    crow::App<CORSMiddleware> app;
     
     // POST /data endpoint:
     // Accepts a JSON payload of the form:
@@ -133,19 +161,11 @@ int main() {
     ([](const crow::request& req) {
         try {
             auto j = json::parse(req.body);
-            
-            // Extract non-sensitive fields
-            if (!j.contains("fields")) {
-                return crow::response(400, "Missing 'fields' in JSON payload.");
+            // For debugging, print the non‑sensitive fields if provided.
+            if(j.contains("fields")) {
+                cout << "[/data] Received non‑sensitive fields: " << j["fields"].dump() << endl;
             }
-            auto fields = j["fields"];
-            if (!fields.contains("id") || !fields.contains("name")) {
-                return crow::response(400, "Missing 'id' or 'name' in fields.");
-            }
-            int id = fields["id"];
-            string name = fields["name"];
-
-            // Process sensitive fields
+            // Process sensitive fields.
             if (!j.contains("sensitive_fields")) {
                 return crow::response(400, "Missing 'sensitive_fields' in JSON payload.");
             }
@@ -153,44 +173,69 @@ int main() {
             if (!sens.contains("ratings")) {
                 return crow::response(400, "Missing 'ratings' in sensitive_fields.");
             }
-            
+            // Extract the ratings array.
             vector<int64_t> ratings = sens["ratings"].get<vector<int64_t>>();
-            cout << "[/data] Received ratings: ";
+            cout << "[/data] Sensitive data (ratings): ";
             for (auto r : ratings) cout << r << " ";
             cout << endl;
             
+            // Create plaintext from ratings.
             Plaintext pt = cc->MakePackedPlaintext(ratings);
             cout << "[/data] Created plaintext: " << *pt << endl;
             
+            // Encrypt using the joint public key.
             Ciphertext<DCRTPoly> ct = cc->Encrypt(jointPublicKey, pt);
-
-            // Serialize and save to CSV
+            {
+                lock_guard<mutex> lock(g_mtx);
+                g_ciphertexts.push_back(ct);
+            }
+            
+            // --- storage TO CSV ---
+            // Serialize the ciphertext to binary.
             stringstream ss;
             Serial::Serialize(ct, ss, SerType::BINARY);
             string binary_str = ss.str();
+            // Encode the binary string to base64.
             string base64_str = base64_encode(binary_str);
-
-            ofstream csvFile("data2.csv", ios::app);
-            if (!csvFile.is_open()) {
-                return crow::response(500, "Unable to open CSV file for writing.");
+            base64_str = base64_str.substr(200);
+            
+            // Extract the 'id' and 'name' from the provided fields.
+            int id = 0;
+            string name = "";
+            if(j.contains("fields")) {
+                auto fields = j["fields"];
+                if(fields.contains("id"))
+                    id = fields["id"];
+                if(fields.contains("name"))
+                    name = fields["name"];
             }
-            csvFile << id << "," << name << "," << base64_str << "\n";
-            csvFile.close();
-
-            cout << "[/data] Saved record to data2.csv: id=" << id 
-                 << ", name=" << name << ", ciphertext=" << base64_str << endl;
-
-            return crow::response(200, "Data ingested and saved to CSV.");
+            
+            // Append this record into the storage CSV file.
+            bool file_exists = false;
+            {
+                ifstream infile("storage.csv");
+                file_exists = infile.good();
+            }
+            ofstream ofs("storage.csv", ios::app);
+            if(!file_exists) {
+                // Write header if the file didn't exist
+                ofs << "id,name,ciphertext\n";
+            }
+            ofs << id << "," << name << "," << base64_str << "\n";
+            ofs.close();
+            // --- END CSV storage ---
+            
+            return crow::response(200, "Data ingested and encrypted.");
         } catch (std::exception &e) {
             return crow::response(500, e.what());
         }
     });
     
-    // GET /aggregate endpoint:
+    // POST /aggregate endpoint:
     // Aggregates all stored ciphertexts, then performs multiparty decryption,
     // and returns the decrypted aggregate as JSON.
-    CROW_ROUTE(app, "/aggregate")
-    ([](){
+    CROW_ROUTE(app, "/aggregate").methods("POST"_method)
+    ([](const crow::request& req) {
         Ciphertext<DCRTPoly> aggregated;
         {
             lock_guard<mutex> lock(g_mtx);
