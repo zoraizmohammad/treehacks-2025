@@ -1,14 +1,15 @@
-
 import { BarChart, Bar, Cell, PieChart, Pie, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ScatterChart, Scatter, XAxis, YAxis, ZAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const DemographicInsights = () => {
   const donutChartRef = useRef<SVGSVGElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Expanded age data with more detailed breakdown
   const ageData = [
     { subject: '18-24', A: 30, fulltime: 20, parttime: 10 },
     { subject: '25-34', A: 45, fulltime: 35, parttime: 10 },
@@ -30,7 +31,6 @@ const DemographicInsights = () => {
     { name: 'Decline', value: 10 },
   ];
 
-  // Expanded ethnicity data with more detailed information
   const ethnicityData = [
     { 
       name: 'Asian', 
@@ -88,7 +88,6 @@ const DemographicInsights = () => {
     }
   ];
 
-  // Multi-level donut chart data with expanded categories
   const multiLevelData = {
     age: [
       { name: '18-24', value: 30, detail: 'Recent graduates' },
@@ -123,7 +122,7 @@ const DemographicInsights = () => {
     if (!donutChartRef.current) return;
 
     const svg = d3.select(donutChartRef.current);
-    svg.selectAll("*").remove(); // Clear existing content
+    svg.selectAll("*").remove();
 
     const width = 400;
     const height = 400;
@@ -135,7 +134,6 @@ const DemographicInsights = () => {
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
-    // Create scales for each ring
     const createArc = (innerRadiusRatio: number, outerRadiusRatio: number) =>
       d3.arc()
         .innerRadius(radius * innerRadiusRatio)
@@ -143,7 +141,6 @@ const DemographicInsights = () => {
 
     const pie = d3.pie<any>().value((d: any) => d.value);
 
-    // Create the three rings
     const rings = [
       { data: multiLevelData.age, colors: COLORS.age, arc: createArc(0.2, 0.4) },
       { data: multiLevelData.gender, colors: COLORS.gender, arc: createArc(0.5, 0.7) },
@@ -162,13 +159,11 @@ const DemographicInsights = () => {
         .attr('stroke', '#e5e7eb')
         .attr('stroke-width', '2');
 
-      // Add tooltips
       path
         .append('title')
         .text(d => `${d.data.name}: ${d.data.value}%`);
     });
 
-    // Add legend
     const legend = svg
       .append('g')
       .attr('font-family', 'sans-serif')
@@ -193,8 +188,35 @@ const DemographicInsights = () => {
       .attr('y', 9.5)
       .attr('dy', '0.32em')
       .text(d => d);
-
   }, []);
+
+  const calculateAgeStats = () => {
+    const total = ageData.reduce((acc, curr) => acc + curr.A, 0);
+    const largestGroup = ageData.reduce((prev, curr) => prev.A > curr.A ? prev : curr);
+    return {
+      total,
+      average: (total / ageData.length).toFixed(1),
+      largestGroup: `${largestGroup.subject} (${largestGroup.A}%)`
+    };
+  };
+
+  const calculateEthnicityStats = () => {
+    const total = ethnicityData.reduce((acc, curr) => acc + curr.value, 0);
+    const avgGrowth = ethnicityData.reduce((acc, curr) => acc + curr.growth, 0) / ethnicityData.length;
+    const mostDiverse = ethnicityData.reduce((prev, curr) => 
+      Object.keys(prev.subgroups).length > Object.keys(curr.subgroups).length ? prev : curr
+    );
+    return {
+      total,
+      avgGrowth: avgGrowth.toFixed(1),
+      mostDiverse: `${mostDiverse.name} (${Object.keys(mostDiverse.subgroups).length} subgroups)`
+    };
+  };
+
+  const ageStats = calculateAgeStats();
+  const ethnicityStats = calculateEthnicityStats();
+  const genderTotal = genderData.reduce((acc, curr) => acc + curr.value, 0);
+  const disabilityTotal = disabilityData.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
     <div className="space-y-6 mb-8">
@@ -206,7 +228,6 @@ const DemographicInsights = () => {
         Anonymous Demographic Insights
       </motion.h2>
 
-      {/* Multi-Level Donut Chart */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -223,7 +244,6 @@ const DemographicInsights = () => {
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Age Distribution - Polar Area Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -270,7 +290,6 @@ const DemographicInsights = () => {
           </Card>
         </motion.div>
 
-        {/* Gender Distribution - Bar Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -300,7 +319,6 @@ const DemographicInsights = () => {
           </Card>
         </motion.div>
 
-        {/* Disability Overview */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -336,7 +354,6 @@ const DemographicInsights = () => {
           </Card>
         </motion.div>
 
-        {/* Ethnicity - Bubble Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -405,6 +422,67 @@ const DemographicInsights = () => {
           </Card>
         </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        <Collapsible
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm"
+        >
+          <CollapsibleTrigger className="flex items-center justify-between w-full">
+            <span className="text-lg font-medium text-[#0066CC]">Aggregate Statistics Summary</span>
+            {isOpen ? (
+              <ChevronUp className="h-5 w-5 text-[#0066CC]" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-[#0066CC]" />
+            )}
+          </CollapsibleTrigger>
+          
+          <CollapsibleContent className="mt-4 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-medium text-[#0066CC] mb-2">Age Distribution</h3>
+                <ul className="space-y-2 text-gray-700">
+                  <li>• Average age group representation: {ageStats.average}%</li>
+                  <li>• Largest age group: {ageStats.largestGroup}</li>
+                  <li>• Total sample size: {ageStats.total}%</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-[#0066CC] mb-2">Gender Distribution</h3>
+                <ul className="space-y-2 text-gray-700">
+                  <li>• Total respondents: {genderTotal}%</li>
+                  <li>• Male to Female ratio: {(genderData[0].value / genderData[1].value).toFixed(2)}</li>
+                  <li>• Non-binary representation: {genderData[2].value}%</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-[#0066CC] mb-2">Ethnicity Insights</h3>
+                <ul className="space-y-2 text-gray-700">
+                  <li>• Average YoY growth: {ethnicityStats.avgGrowth}%</li>
+                  <li>• Most diverse category: {ethnicityStats.mostDiverse}</li>
+                  <li>• Total representation: {ethnicityStats.total}%</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-[#0066CC] mb-2">Disability Overview</h3>
+                <ul className="space-y-2 text-gray-700">
+                  <li>• Total responses: {disabilityTotal}%</li>
+                  <li>• Disability rate: {disabilityData[0].value}%</li>
+                  <li>• Response rate: {(100 - disabilityData[2].value)}%</li>
+                </ul>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </motion.div>
     </div>
   );
 };
