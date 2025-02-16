@@ -1,4 +1,3 @@
-
 import { BarChart, Bar, Cell, PieChart, Pie, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ScatterChart, Scatter, XAxis, YAxis, ZAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -435,7 +434,7 @@ const DemographicInsights = () => {
           className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm"
         >
           <CollapsibleTrigger className="flex items-center justify-between w-full">
-            <span className="text-lg font-medium text-[#0066CC]">Aggregate Statistics Summary</span>
+            <span className="text-lg font-medium text-[#0066CC]">Aggregate Demographic Statistics Summary</span>
             {isOpen ? (
               <ChevronUp className="h-5 w-5 text-[#0066CC]" />
             ) : (
@@ -483,6 +482,15 @@ const DemographicInsights = () => {
             </div>
           </CollapsibleContent>
         </Collapsible>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="mt-8 mb-4"
+      >
+        <h2 className="text-xl font-semibold text-[#0066CC]">More Application Tools</h2>
       </motion.div>
     </div>
   );
