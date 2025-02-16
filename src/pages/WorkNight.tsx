@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -153,7 +152,8 @@ const WorkNight = () => {
       toast({
         title: "Required Fields Missing",
         description: "Please fill out all required fields before continuing.",
-        variant: "destructive"
+        variant: "destructive",
+        className: "bg-black text-white border-0 rounded-xl"
       });
       return;
     }
@@ -162,6 +162,7 @@ const WorkNight = () => {
     toast({
       title: "Progress Saved",
       description: "Your information has been saved. Moving to next section.",
+      className: "bg-black text-white border-0 rounded-xl"
     });
   };
 
