@@ -31,17 +31,17 @@ interface ApplicationFormData {
 
 const initialFormData: ApplicationFormData = {
   personalInfo: {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    university: "",
-    major: "",
-    graduationDate: "",
+    firstName: "Michael",
+    lastName: "Chen",
+    email: "michael.chen@stanford.edu",
+    phone: "(650) 555-0123",
+    address: "123 Palm Drive",
+    city: "Palo Alto",
+    state: "CA",
+    zipCode: "94301",
+    university: "Stanford University",
+    major: "Computer Science",
+    graduationDate: "2025-05-15",
     resume: null,
   },
   voluntaryDisclosure: {
