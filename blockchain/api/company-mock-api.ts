@@ -97,7 +97,7 @@ app.get('/api/company/:companyId/count', (req, res) => {
     });
 });
 
-const PORT = process.env.COMPANY_API_PORT || 3001;
+const PORT = process.env.COMPANY_API_PORT || 3002;
 app.listen(PORT, () => {
     console.log(`Company mock API running on port ${PORT}`);
 }); 

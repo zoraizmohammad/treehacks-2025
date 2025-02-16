@@ -188,8 +188,6 @@ class BlockchainListener {
                 encryptedData
             );
 
-            console.log(`Final result: ${result}`);
-
             console.log("Marking request as processed and storing result on-chain...");
             const tx = await this.contract.markRequestProcessed(
                 requestId,

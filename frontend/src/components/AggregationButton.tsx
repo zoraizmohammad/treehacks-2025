@@ -25,7 +25,7 @@ declare global {
 }
 
 // Contract configuration
-const CONTRACT_ADDRESS = "0xce870197F1fa98dC26333CAE3c16272c909A5Ce5";
+const CONTRACT_ADDRESS = "0x0ce0833170500F57ce1c9821B9DA42c6079c4011";
 const CHAIN_ID = 17000; // Holesky testnet
 const PROVIDER_URL = "https://ethereum-holesky.publicnode.com";
 const CONTRACT_ABI = [
@@ -33,12 +33,12 @@ const CONTRACT_ABI = [
     "event ValidationRequired(uint256 indexed requestId)",
     "event AggregationRequested(uint256 indexed requestId, address indexed requester, string aggregationType, uint256 dataCount, string dataSourceUrl, string companyId)",
     "event AggregationProcessed(uint256 indexed requestId, uint256 result)",
-    "function getAggregationRequest(uint256 requestId) public view returns (address requester, string memory aggregationType, uint256 dataCount, bool isValidated, uint256 result, string memory dataSourceUrl, string memory companyId, bool isProcessed, uint256 timestamp)"
+    "function getAggregationRequest(uint256 requestId) view returns (address requester, string aggregationType, uint256 timestamp, bool isProcessed, uint256 dataCount, string dataSourceUrl, string companyId, bool isValidated, uint256 result)"
 ];
 
 // API endpoints
-const COMPANY_API_URL = "http://localhost:3001/api/company";
-const AGGREGATOR_API_URL = "http://localhost:3000/api/aggregate";
+const COMPANY_API_URL = "http://localhost:3002/api/company";
+const AGGREGATOR_API_URL = "http://localhost:18080/aggregate";
 const RECORD_COUNT = 1000;
 
 interface AggregationButtonProps {
@@ -223,7 +223,7 @@ export const AggregationButton: React.FC<AggregationButtonProps> = ({ variant, c
                             const isProcessed = request.isProcessed;
                             const isValidated = request.isValidated;
 
-                            updateStatus(`Request processed! Result: ${finalResult.toString()}`);
+                            updateStatus(`Request processed!`);
                             console.log("Final request state:", {
                                 isProcessed,
                                 isValidated,
@@ -264,9 +264,6 @@ export const AggregationButton: React.FC<AggregationButtonProps> = ({ variant, c
                     )}
                     {requestId && (
                         <p className={`text-sm ${STATUS_STYLES[variant].requestId}`}>Request ID: {requestId}</p>
-                    )}
-                    {result && (
-                        <p className={STATUS_STYLES[variant].result}>Final Result: {result}</p>
                     )}
                 </div>
             )}
